@@ -1,6 +1,16 @@
 /*
-版本: v0.5.10
+版本: v0.6.8
 变更记录:
+- v0.6.8 (2025-08-22): 统一高度策略（CSS变量+clamp）；整合列表样式并降低hover抖动；补充Firefox滚动条样式；加入 prefers-reduced-motion 降级；移除移动端冗余max-height覆盖
+- v0.6.7 (2025-08-22): 固定“已选择列/原始表头”两个虚线面板高度，列表在面板内滚动，确保可见内容不超出虚线底线；移动端降低固定高度
+- v0.6.6 (2025-08-22): 防止“已选择列/原始表头”面板内容纵向越界：面板裁剪溢出并稳定滚动条占位
+- v0.6.5 (2025-08-22): 第2区域滚动条优化：列表仅纵向滚动并隐藏横向；卡片底部增加内边距；自定义滚动条轨道为透明，消除“越界条”观感
+- v0.6.4 (2025-08-22): 预览表格在字段过多时优化：单元格单行省略、限制最大宽度，保留水平滚动，避免视觉越界
+- v0.6.3 (2025-08-22): 第2区域滚动逻辑调整：取消整块滚动，改为“已选择列/原始表头”列表分别滚动；为列表设置最大高度
+- v0.6.2 (2025-08-22): 增加“选择字段列名”搜索行与下方面板的垂直间距（8px → 16px），视觉更呼吸
+- v0.6.1 (2025-08-22): 优化联想下拉布局与美观：输入与按钮同一行、输入不再独占整行；下拉仅覆盖输入区域且不遮挡按钮；细化阴影/边框
+- v0.6.0 (2025-08-22): 为第2区域输入框新增下拉联想样式（.input-wrap、.suggest、.suggest .item、.suggest .item.active、mark）
+- v0.5.11 (2025-08-22): 新增模态弹窗样式（.modal、.modal-dialog、.modal-backdrop），页眉采用flex并添加 .header-actions 区域
 - v0.5.10 (2025-08-21): headers项添加清晰的 :focus-visible 样式；selectedList 禁用hover背景变化；icon按钮显示手型
 - v0.5.9 (2025-08-21): 禁用已选择列表hover背景变化；为headers项提供清晰的键盘焦点样式
 - v0.5.8 (2025-08-21): 统一列表文字截断与指针样式（selectedList 不显示手型，span 弹性占位并省略号）
@@ -71,7 +81,9 @@ body::after {
 
 .app-header, .app-footer { padding: 12px 16px; background: var(--glass); border-bottom: 1px solid var(--glass-border); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); }
 .app-footer { border-top: 1px solid var(--glass-border); border-bottom: none; text-align: center; color: var(--muted); margin-top: 12px; }
+.app-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .app-header h1 { margin: 0; font-size: 18px; }
+.header-actions { display: flex; gap: 8px; align-items: center; }
 
 .container { max-width: 1180px; margin: 16px auto; padding: 0 12px 20px; display: grid; gap: 12px; }
 .container { grid-template-columns: 320px 1fr; grid-auto-rows: min-content; align-items: start; }
@@ -88,24 +100,42 @@ body::after {
 
 /* 右侧字段选择区：限制最大高度并内部滚动，避免拉伸页面 */
 .container > .card:nth-of-type(2) {
-  max-height: calc(100vh - 110px); /* 提高上限以减少下方空白 */
-  min-height: 420px; /* 给一个合理的下限，视觉上更饱满 */
-  overflow: auto;
+  /* 取消整体滚动，由列表分别滚动 */
+  max-height: none;
+  min-height: 420px;
+  overflow: visible;
+  padding-bottom: 10px; /* 给内部滚动条留出呼吸，避免贴边显露横条 */
+  /* 固定两个虚线面板的基准高度（clamp自适应） */
+  --panel-fixed-h: clamp(300px, 48vh, 420px);
 }
 
 /* 第2区域内左右两个面板统一默认高度，保持视觉一致 */
 .container > .card:nth-of-type(2) .panel {
-  min-height: 280px;
+  /* 固定面板高度，防止虚线边框被内容撑开 */
+  height: var(--panel-fixed-h);
+  min-height: var(--panel-fixed-h);
+  max-height: var(--panel-fixed-h);
+  overflow: hidden;          /* 裁剪内部溢出，防止纵向越界 */
+  scrollbar-gutter: stable;  /* 稳定滚动条占位，防止抖动 */
 }
 
 .card { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 14px; padding: 12px; box-shadow: var(--glass-shadow); overflow: hidden; backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); }
 .card h2 { margin: 0 0 8px 0; font-size: 16px; }
 
-.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-.container > .card:nth-of-type(2) > .row { margin-bottom: 8px; }
+.row { display: flex; gap: 8px; align-items: flex-start; flex-wrap: wrap; }
+.container > .card:nth-of-type(2) > .row { margin-bottom: 16px; }
 .flex { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .panel { border: 1px dashed var(--glass-border); border-radius: 12px; padding: 8px; min-height: 160px; display: flex; flex-direction: column; background: rgba(59,130,246,0.02); }
 .panel-title { color: var(--muted); font-size: 12px; margin-bottom: 8px; }
+
+/* 输入+联想容器 */
+.input-wrap { position: relative; flex: 1 1 0; min-width: 260px; }
+.input-wrap > input { width: 100%; }
+.suggest { position: absolute; left: 0; right: 0; top: calc(100% + 6px); background: rgba(255,255,255,0.92); border: 1px solid rgba(59,130,246,0.18); border-radius: 10px; box-shadow: 0 8px 24px rgba(15,23,42,0.08); padding: 4px; display: flex; flex-direction: column; gap: 2px; max-height: 240px; overflow: auto; z-index: 20; }
+.suggest .item { padding: 8px 10px; border-radius: 8px; cursor: pointer; font-size: 13px; }
+.suggest .item:hover { background: rgba(59,130,246,0.06); }
+.suggest .item.active { background: rgba(59,130,246,0.10); color: var(--text); }
+.suggest mark { background: rgba(59,130,246,0.18); color: inherit; padding: 0 1px; border-radius: 2px; }
 
 .list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
 .list li { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; border: 1px solid var(--glass-border); border-radius: 10px; background: rgba(59,130,246,0.03); font-size: 13px; }
@@ -115,9 +145,7 @@ body::after {
 /* 强制两侧列表文字大小一致（避免被其他规则或控件影响） */
 #selectedList li, #headersList li { font-size: 13px; line-height: 1.25; }
 /* 统一两个列表的文本节点（span）样式，配合JS统一的 li>span 结构 */
-.list li > span { font-size: 13px; line-height: 1.25; }
-/* 文本占据剩余空间并单行省略，避免与按钮挤压导致换行或抖动 */
-.list li > span { flex: 1 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.list li > span { font-size: 13px; line-height: 1.25; flex: 1 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* “已选择列”项自身不可点击，仅删除按钮可点击，避免误导性的手型指针 */
 #selectedList li { cursor: default; }
 #selectedList li:hover { cursor: default; }
@@ -127,7 +155,15 @@ body::after {
 #headersList li:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 
 /* 选择区域自适应高度并滚动（selectedList 与 headersList） */
-.panel .list { flex: 1 1 auto; min-height: 0; overflow: auto; }
+/* 列表在固定面板内自适应填充并滚动；仅纵向滚动，隐藏横向 */
+.panel .list { flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: hidden; max-height: none; }
+/* 自定义滚动条，轨道透明，降低存在感 */
+.panel .list::-webkit-scrollbar { width: 8px; height: 8px; }
+.panel .list::-webkit-scrollbar-thumb { background: rgba(59,130,246,0.35); border-radius: 8px; }
+.panel .list::-webkit-scrollbar-track { background: transparent; }
+/* Firefox 滚动条样式 */
+.panel .list { scrollbar-width: thin; scrollbar-color: rgba(59,130,246,0.35) transparent; }
+.suggest { scrollbar-width: thin; scrollbar-color: rgba(59,130,246,0.35) transparent; }
 
 input[type="text"], select { background: rgba(255,255,255,0.8); color: var(--text); border: 1px solid var(--glass-border); border-radius: 10px; padding: 8px 10px; outline: none; backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); }
 input[type="file"] { color: var(--text); }
@@ -186,6 +222,14 @@ button:hover {
   transform: translateY(-1px);
   box-shadow: 0 6px 16px rgba(59, 130, 246, 0.12);
 }
+/* 列表中的小图标按钮不做位移动效，降低抖动感 */
+.list .icon-btn:hover { transform: none; box-shadow: 0 2px 8px rgba(59,130,246,0.08); }
+
+/* 动效降级：用户偏好减少动态时，关闭位移与大阴影 */
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+  button:hover { transform: none; box-shadow: 0 2px 8px rgba(59,130,246,0.08); }
+}
 button.primary:hover {
   box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
 }
@@ -211,11 +255,10 @@ button:active {
 .preview-table th, .preview-table td {
   border: 1px solid var(--glass-border);
   padding: 6px 8px;
-  text-align: left;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 40px; /* 固定统一列宽，可按需调整 */
+  white-space: nowrap;          /* 单行显示 */
+  overflow: hidden;             /* 超出隐藏 */
+  text-overflow: ellipsis;      /* 省略号 */
+  max-width: 180px;             /* 每列最大可视宽度 */
 }
 .preview-table th { background: rgba(59,130,246,0.06); color: var(--text); position: sticky; top: 0; z-index: 1; backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); }
 .preview-table tr:nth-child(even) td { background: rgba(59,130,246,0.015); }
@@ -223,6 +266,17 @@ button:active {
 @media (max-width: 720px) {
   .container { display: flex; flex-direction: column; }
   .flex { grid-template-columns: 1fr; height: auto; }
-  .panel .list { max-height: 280px; }
   .container > .card:nth-of-type(2) { max-height: none; overflow: visible; }
+  .input-wrap { min-width: 0; flex: 1 1 100%; }
+  /* 移动端：clamp 已自适应，无需强制覆盖高度 */
 }
+
+/* 模态弹窗 */
+.modal[hidden] { display: none !important; }
+.modal { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; }
+.modal-backdrop { position: absolute; inset: 0; background: rgba(15, 23, 42, 0.35); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); }
+.modal-dialog { position: relative; width: min(680px, 92vw); max-height: 80vh; overflow: auto; background: var(--glass-strong); border: 1px solid var(--glass-border); border-radius: 14px; box-shadow: var(--glass-shadow); padding: 12px; }
+.modal-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.modal-header h3 { margin: 0; font-size: 16px; }
+.modal-body { font-size: 14px; color: var(--text); }
+.modal-body ol { padding-left: 18px; margin: 0 0 8px 0; }
