@@ -1,0 +1,817 @@
+/*
+版本: v1.0.0
+变更记录:
+- v1.0.0 (2026-02-28): 初始版本 - Minimalist Monochrome 设计系统
+  * 纯黑白配色方案，无任何彩色元素
+  * 中文优化字体：思源宋体（衬线）+ 思源黑体（无衬线）
+  * 零圆角设计，所有元素采用锐利90度直角
+  * 线条为主的视觉系统，无阴影无渐变
+  * 戏剧性留白与超大字号层级
+  * 即时交互反馈（100ms以内过渡）
+  * 反色强调（黑底白字）替代彩色高亮
+  * 纹理图案增加深度（防止过度扁平）
+*/
+
+:root {
+  /* 严格单色调色板 */
+  --background: #FFFFFF;
+  --foreground: #000000;
+  --muted: #F5F5F5;
+  --muted-foreground: #525252;
+  --accent: #000000;
+  --accent-foreground: #FFFFFF;
+  --border: #000000;
+  --border-light: #E5E5E5;
+  --card: #FFFFFF;
+  --card-foreground: #000000;
+  
+  /* 中文优化字体栈 */
+  --font-serif: "Noto Serif SC", "Source Han Serif SC", "Source Han Serif CN", "思源宋体", Georgia, serif;
+  --font-sans: "Noto Sans SC", "Source Han Sans SC", "Source Han Sans CN", "思源黑体", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-mono: "JetBrains Mono", "Consolas", monospace;
+  
+  /* 边框粗细 */
+  --border-hairline: 1px;
+  --border-thin: 1px;
+  --border-medium: 2px;
+  --border-thick: 4px;
+  --border-ultra: 8px;
+}
+
+* { 
+  box-sizing: border-box; 
+  margin: 0;
+  padding: 0;
+}
+
+body { 
+  font-family: var(--font-sans);
+  color: var(--foreground); 
+  background: var(--background);
+  line-height: 1.625;
+  font-size: 16px;
+  position: relative;
+  /* 全局纹理：细微噪点，营造纸质感 */
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.02'/%3E%3C/svg%3E");
+}
+
+/* 页眉：黑底白字反色设计 */
+.app-header { 
+  padding: 16px 24px; 
+  background: var(--foreground);
+  color: var(--background);
+  border-bottom: var(--border-thick) solid var(--foreground);
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between; 
+  gap: 16px;
+  position: relative;
+  /* 垂直线纹理 */
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 1px,
+    rgba(255,255,255,0.03) 1px,
+    rgba(255,255,255,0.03) 2px
+  );
+  background-size: 4px 100%;
+}
+
+.app-header h1 { 
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1;
+}
+
+.header-actions { 
+  display: flex; 
+  gap: 12px; 
+  align-items: center; 
+}
+
+/* 主容器 */
+.container { 
+  max-width: 1152px; 
+  margin: 0 auto; 
+  padding: 48px 24px 64px; 
+  display: grid; 
+  gap: 0;
+  grid-template-columns: 320px 1fr; 
+  grid-auto-rows: min-content; 
+  align-items: start; 
+}
+
+/* 区块定位保持不变 */
+.container > .card:nth-of-type(1) { grid-column: 1; grid-row: 1; }
+.container > .card:nth-of-type(2) { grid-column: 2; grid-row: 1 / span 3; }
+.container > .card:nth-of-type(3) { grid-column: 1; grid-row: 2; }
+.container > .card:nth-of-type(4) { grid-column: 1; grid-row: 3; }
+.container > .card:nth-of-type(5) { grid-column: 1 / span 2; grid-row: 4; }
+
+/* 卡片：纯白底黑边，零圆角 */
+.card { 
+  background: var(--card);
+  border: var(--border-thin) solid var(--border);
+  border-radius: 0;
+  padding: 24px;
+  margin-bottom: 24px;
+  position: relative;
+  /* 水平线纹理 */
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 1px,
+    rgba(0,0,0,0.015) 1px,
+    rgba(0,0,0,0.015) 2px
+  );
+  background-size: 100% 4px;
+}
+
+/* 卡片间分隔线 */
+.card::after {
+  content: '';
+  position: absolute;
+  bottom: -24px;
+  left: 0;
+  right: 0;
+  height: var(--border-thick);
+  background: var(--border);
+}
+
+.container > .card:last-of-type::after {
+  display: none;
+}
+
+.card h2 { 
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  border-bottom: var(--border-medium) solid var(--border);
+  padding-bottom: 8px;
+}
+
+/* 行布局 */
+.row { 
+  display: flex; 
+  gap: 12px; 
+  align-items: flex-start; 
+  flex-wrap: wrap; 
+  margin-bottom: 16px;
+}
+
+.container > .card:nth-of-type(2) > .row { 
+  margin-bottom: 24px; 
+}
+
+/* 双栏布局 */
+.flex { 
+  display: grid; 
+  grid-template-columns: 1fr 1fr; 
+  gap: 16px; 
+}
+
+/* 面板：虚线边框 */
+.panel { 
+  border: var(--border-thin) dashed var(--border-light);
+  border-radius: 0;
+  padding: 16px;
+  min-height: 160px;
+  display: flex; 
+  flex-direction: column;
+  background: var(--muted);
+  height: var(--panel-fixed-h, clamp(300px, 48vh, 420px));
+  min-height: var(--panel-fixed-h, clamp(300px, 48vh, 420px));
+  max-height: var(--panel-fixed-h, clamp(300px, 48vh, 420px));
+  overflow: hidden;
+  scrollbar-gutter: stable;
+  /* 网格纹理 */
+  background-image:
+    linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.panel-title { 
+  color: var(--muted-foreground);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between; 
+  gap: 12px;
+  border-bottom: var(--border-hairline) solid var(--border-light);
+  padding-bottom: 8px;
+}
+
+/* 输入容器 */
+.input-wrap { 
+  position: relative; 
+  flex: 1 1 0; 
+  min-width: 260px; 
+}
+
+.input-wrap > input { 
+  width: 100%; 
+}
+
+/* 联想下拉 */
+.suggest { 
+  position: absolute; 
+  left: 0; 
+  right: 0; 
+  top: calc(100% + 8px);
+  background: var(--background);
+  border: var(--border-medium) solid var(--border);
+  border-radius: 0;
+  padding: 8px;
+  display: flex; 
+  flex-direction: column; 
+  gap: 4px;
+  max-height: 320px;
+  overflow: auto;
+  z-index: 20;
+}
+
+.suggest .item { 
+  padding: 12px 14px;
+  border: var(--border-hairline) solid var(--border-light);
+  border-radius: 0;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex; 
+  align-items: center; 
+  gap: 12px;
+  transition: all 100ms ease;
+  background: var(--background);
+}
+
+.suggest .item:hover { 
+  background: var(--muted);
+  border-color: var(--border);
+}
+
+.suggest .item.active { 
+  background: var(--foreground);
+  color: var(--background);
+  border-color: var(--foreground);
+}
+
+.suggest .item.selected { 
+  background: var(--foreground);
+  color: var(--background);
+  border-color: var(--foreground);
+}
+
+.suggest .item.selected:hover { 
+  background: var(--foreground);
+  opacity: 0.9;
+}
+
+.suggest mark { 
+  background: transparent;
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 2px;
+}
+
+/* 复选框 */
+.suggest-checkbox {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+  accent-color: var(--foreground);
+  border: var(--border-thin) solid var(--border);
+  border-radius: 0;
+}
+
+.suggest-label {
+  flex: 1;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* 确认按钮 */
+.suggest-confirm {
+  margin: 8px 8px 4px 8px;
+  padding: 12px 16px;
+  background: var(--foreground);
+  border: none;
+  color: var(--background);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-radius: 0;
+  cursor: pointer;
+  transition: all 100ms ease;
+  text-align: center;
+}
+
+.suggest-confirm:hover {
+  background: var(--background);
+  color: var(--foreground);
+  border: var(--border-medium) solid var(--border);
+}
+
+/* 列表 */
+.list { 
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex; 
+  flex-direction: column; 
+  gap: 8px;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.list li { 
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between; 
+  gap: 12px;
+  padding: 12px 14px;
+  border: var(--border-hairline) solid var(--border);
+  border-radius: 0;
+  background: var(--background);
+  font-size: 14px;
+  line-height: 1.4;
+  transition: all 100ms ease;
+}
+
+.list li:hover { 
+  background: var(--foreground);
+  color: var(--background);
+  cursor: pointer;
+}
+
+.list.compact li { 
+  padding: 10px 12px;
+}
+
+/* 统一列表文字 */
+#selectedList li, 
+#headersList li { 
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.list li > span { 
+  font-size: 14px;
+  line-height: 1.4;
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 已选择列表不显示手型 */
+#selectedList li { 
+  cursor: default;
+}
+
+#selectedList li:hover { 
+  cursor: default;
+  background: var(--background);
+  color: var(--foreground);
+}
+
+/* 原始表头聚焦样式 */
+#headersList li:focus-visible { 
+  outline: 3px solid var(--foreground);
+  outline-offset: 3px;
+}
+
+/* 滚动条样式 */
+.panel .list::-webkit-scrollbar,
+.suggest::-webkit-scrollbar { 
+  width: 8px;
+  height: 8px;
+}
+
+.panel .list::-webkit-scrollbar-thumb,
+.suggest::-webkit-scrollbar-thumb { 
+  background: var(--border);
+  border-radius: 0;
+}
+
+.panel .list::-webkit-scrollbar-track,
+.suggest::-webkit-scrollbar-track { 
+  background: transparent;
+}
+
+.panel .list,
+.suggest { 
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+/* 输入框 */
+input[type="text"], 
+select { 
+  background: var(--background);
+  color: var(--foreground);
+  border: none;
+  border-bottom: var(--border-medium) solid var(--border);
+  border-radius: 0;
+  padding: 12px 0;
+  outline: none;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  transition: border-width 100ms ease;
+}
+
+input[type="text"]:focus,
+select:focus {
+  border-bottom-width: var(--border-thick);
+}
+
+input[type="file"] { 
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  padding: 12px 0;
+  border-bottom: var(--border-thin) solid var(--border-light);
+}
+
+/* 复选框标签 */
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 14px;
+  color: var(--foreground);
+  transition: all 100ms ease;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--foreground);
+  border: var(--border-thin) solid var(--border);
+  border-radius: 0;
+}
+
+.checkbox-label:hover {
+  color: var(--muted-foreground);
+}
+
+/* 输入控件占满宽度 */
+#colInput, 
+#historySelect, 
+#sheetName {
+  width: 100%;
+  flex: 1 1 100%;
+}
+
+/* 按钮基础样式 */
+button { 
+  border: var(--border-medium) solid var(--border);
+  background: var(--background);
+  color: var(--foreground);
+  padding: 12px 20px;
+  border-radius: 0;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: all 100ms ease;
+}
+
+button:hover {
+  background: var(--foreground);
+  color: var(--background);
+}
+
+button:focus-visible {
+  outline: 3px solid var(--foreground);
+  outline-offset: 3px;
+}
+
+/* 主按钮：黑底白字 */
+button.primary { 
+  background: var(--foreground);
+  border-color: var(--foreground);
+  color: var(--background);
+}
+
+button.primary:hover { 
+  background: var(--background);
+  color: var(--foreground);
+  border-color: var(--foreground);
+}
+
+/* 次要按钮 */
+button.secondary { 
+  background: var(--background);
+  border-color: var(--border);
+  color: var(--foreground);
+}
+
+button.secondary:hover { 
+  background: var(--foreground);
+  color: var(--background);
+}
+
+/* 幽灵按钮 */
+button.ghost { 
+  background: transparent;
+  color: var(--muted-foreground);
+  border-color: transparent;
+  padding: 12px 16px;
+}
+
+button.ghost:hover { 
+  background: var(--muted);
+  color: var(--foreground);
+  border-color: var(--border-light);
+}
+
+button.ghost.small {
+  padding: 6px 10px;
+  font-size: 10px;
+  border-radius: 0;
+}
+
+button.ghost.small:hover {
+  background: var(--foreground);
+  color: var(--background);
+  border-color: var(--foreground);
+}
+
+/* 图标按钮 */
+button.icon-btn { 
+  background: var(--background);
+  border: var(--border-thin) solid var(--border);
+  width: 32px;
+  height: 32px;
+  border-radius: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  line-height: 1;
+}
+
+button.icon-btn:hover {
+  background: var(--foreground);
+  color: var(--background);
+}
+
+/* 列表中的图标按钮不做位移 */
+.list .icon-btn:hover { 
+  transform: none;
+}
+
+/* 动效降级 */
+@media (prefers-reduced-motion: reduce) {
+  * { 
+    transition: none !important;
+  }
+}
+
+/* 提示文本 */
+.hint { 
+  color: var(--muted-foreground);
+  font-size: 13px;
+  margin-top: 12px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+}
+
+.hint.info { 
+  color: var(--muted-foreground);
+}
+
+.hint.warn { 
+  color: var(--foreground);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+}
+
+.hint.error { 
+  color: var(--foreground);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+}
+
+/* 预览表格 */
+.preview-wrap { 
+  overflow: auto;
+  max-height: 320px;
+  border: var(--border-medium) solid var(--border);
+  border-radius: 0;
+  background: var(--background);
+}
+
+.preview-table { 
+  border-collapse: collapse;
+  font-size: 13px;
+  table-layout: fixed;
+  min-width: 100%;
+  width: max-content;
+}
+
+.preview-table th, 
+.preview-table td {
+  border: var(--border-hairline) solid var(--border);
+  padding: 10px 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+  text-align: left;
+}
+
+.preview-table th { 
+  background: var(--foreground);
+  color: var(--background);
+  font-family: var(--font-sans);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.preview-table tr:nth-child(even) td { 
+  background: var(--muted);
+}
+
+/* 模态弹窗 */
+.modal[hidden] { 
+  display: none !important;
+}
+
+.modal { 
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-backdrop { 
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.modal-dialog { 
+  position: relative;
+  width: min(720px, 92vw);
+  max-height: 80vh;
+  overflow: auto;
+  background: var(--background);
+  border: var(--border-thick) solid var(--border);
+  border-radius: 0;
+  padding: 32px;
+  /* 对角线纹理 */
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 40px,
+    rgba(0,0,0,0.01) 40px,
+    rgba(0,0,0,0.01) 42px
+  );
+}
+
+.modal-header { 
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: var(--border-medium) solid var(--border);
+}
+
+.modal-header h3 { 
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.modal-body { 
+  font-size: 15px;
+  color: var(--foreground);
+  line-height: 1.75;
+}
+
+.modal-body ol { 
+  padding-left: 24px;
+  margin: 16px 0;
+  list-style-type: decimal;
+}
+
+.modal-body ol li {
+  margin-bottom: 12px;
+  padding-left: 8px;
+}
+
+.modal-body .hint {
+  margin-top: 24px;
+  padding: 16px;
+  border-left: var(--border-thick) solid var(--border);
+  background: var(--muted);
+}
+
+/* 响应式设计 */
+@media (max-width: 720px) {
+  .container { 
+    display: flex;
+    flex-direction: column;
+    padding: 24px 16px 48px;
+  }
+  
+  .flex { 
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  
+  .container > .card:nth-of-type(2) { 
+    max-height: none;
+    overflow: visible;
+  }
+  
+  .input-wrap { 
+    min-width: 0;
+    flex: 1 1 100%;
+  }
+  
+  .card h2 {
+    font-size: 18px;
+  }
+  
+  .app-header h1 {
+    font-size: 20px;
+  }
+  
+  .modal-dialog {
+    padding: 24px;
+  }
+  
+  .modal-header h3 {
+    font-size: 20px;
+  }
+}
+
+/* 第2区域高度控制 */
+.container > .card:nth-of-type(2) {
+  max-height: none;
+  min-height: 420px;
+  overflow: visible;
+  padding-bottom: 16px;
+  --panel-fixed-h: clamp(300px, 48vh, 420px);
+}
+
+/* 打印样式优化 */
+@media print {
+  body {
+    background: white;
+    background-image: none;
+  }
+  
+  .app-header {
+    background: white;
+    color: black;
+    border-bottom: 2px solid black;
+  }
+  
+  .card {
+    page-break-inside: avoid;
+    border: 1px solid black;
+  }
+  
+  button {
+    display: none;
+  }
+}

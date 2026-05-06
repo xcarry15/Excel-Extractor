@@ -1,7 +1,16 @@
 <!--
-版本: v0.1.9
+版本: v1.4.5
 变更记录:
-- v0.1.9 (2025-08-22): 移除“表头选择”按钮（下拉联想与直接点选表头已覆盖其用途）
+- v1.4.5 (2026-05-06): 调整 Excel 解析库加载顺序，改为本地优先并补充国内 CDN 兜底
+- v1.4.4 (2026-02-28): 新增导出成功后的简洁弹窗提醒
+- v1.4.3 (2026-02-28): 修复列名输入解析，支持单个空格作为分隔符
+- v1.4.2 (2026-02-28): 简化使用说明内容和样式，保持简洁清晰
+- v1.4.1 (2026-02-28): 优化使用说明内容和样式，更清晰简洁易读
+- v1.4.0 (2026-02-28): 应用现代清爽设计风格，提升阅读体验和视觉清晰度
+- v1.3.1 (2026-02-26): "重名列仅添加第一次出现的"选项默认勾选
+- v1.3.0 (2026-02-26): 实现多CDN源自动切换加载，提高库文件加载成功率
+- v1.2.1 (2026-02-26): 增强错误处理，添加XLSX库加载状态检查和超时处理
+- v0.1.9 (2025-08-22): 移除"表头选择"按钮（下拉联想与直接点选表头已覆盖其用途）
 - v0.1.8 (2025-08-22): 第2区域输入框新增“实时下拉联想（包含匹配）”，支持键盘上下/回车选择与鼠标点击
 - v0.1.7 (2025-08-22): 在“使用说明”中新增工具用途的简短描述
 - v0.1.6 (2025-08-22): 页眉右上角新增“说明”按钮与模态弹窗（使用说明），样式与页面一致
@@ -16,16 +25,59 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Excel 字段提取 - 沈浪 v0.1.9</title>
-  <link rel="stylesheet" href="./styles.css"/>
-  <!-- SheetJS (xlsx) -->
-  <script defer src="./libs/xlsx.full.min.js"></script>
+  <title>Excel 字段提取 - 沈浪 v1.4.5</title>
+  <link rel="stylesheet" href="./styles-modern.css"/>
+  <!-- Excel 解析库：本地优先，国内 CDN 兜底 -->
+  <script>
+    (function() {
+      const scriptUrls = [
+        './libs/xlsx.full.min.js',
+        'https://cdn.bootcdn.net/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'
+      ];
+
+      let currentIndex = 0;
+
+      function loadScript(url) {
+        return new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = url;
+          script.defer = true;
+          script.onload = resolve;
+          script.onerror = reject;
+          document.head.appendChild(script);
+        });
+      }
+
+      function tryNextScript() {
+        if (currentIndex >= scriptUrls.length) {
+          console.error('Excel 解析库的本地文件和兜底源均加载失败');
+          return;
+        }
+
+        const url = scriptUrls[currentIndex];
+        console.log('尝试加载 Excel 解析库:', url);
+
+        loadScript(url)
+          .then(() => {
+            console.log('成功加载 Excel 解析库:', url);
+          })
+          .catch(() => {
+            console.warn('Excel 解析库加载失败:', url);
+            currentIndex++;
+            tryNextScript();
+          });
+      }
+
+      tryNextScript();
+    })();
+  </script>
   <!-- SortableJS for drag-and-drop -->
   <script defer src="./libs/Sortable.min.js"></script>
 </head>
 <body>
   <header class="app-header">
-    <h1>Excel 字段提取 - 沈浪 v0.1.9</h1>
+    <h1>Excel 字段提取 - 沈浪 v1.4.5</h1>
     <div class="header-actions">
       <button id="btnHelp" class="ghost" title="查看使用说明">说明</button>
     </div>
@@ -45,14 +97,23 @@
       <h2>2. 选择字段列名</h2>
       <div class="row">
         <div class="input-wrap">
-          <input id="colInput" type="text" placeholder="输入列名，逗号分隔或回车添加，如：姓名, 电话"/>
+          <input id="colInput" type="text" placeholder="输入列名，支持逗号、多个空格分隔或回车添加，如：姓名, 电话 或 点位编号   提交时间   审核状态"/>
           <div id="colSuggest" class="suggest" hidden role="listbox" aria-label="匹配列名"></div>
         </div>
         <button id="btnAddCol" class="secondary">添加</button>
       </div>
+      <div class="row" style="margin-top: 8px;">
+        <label class="checkbox-label">
+          <input type="checkbox" id="chkFirstOnly" checked />
+          <span>重名列仅添加第一次出现的</span>
+        </label>
+      </div>
       <div class="flex">
         <div class="panel">
-          <div class="panel-title">已选择列（可拖拽排序）</div>
+          <div class="panel-title">
+            <span>已选择列（可拖拽排序）</span>
+            <button id="btnClearSelected" class="ghost small" title="清空所有已选择的列">一键清除</button>
+          </div>
           <ul id="selectedList" class="list"></ul>
         </div>
         <div class="panel">
@@ -96,16 +157,37 @@
         <button id="helpClose" class="icon-btn" aria-label="关闭" title="关闭">×</button>
       </div>
       <div class="modal-body">
-        <p class="hint">本工具用于从 Excel 表中按列名快速提取所需字段、调整顺序并导出为新的 .xlsx，适合进行数据清洗与字段重组。</p>
+        <p>本工具用于从 Excel 中提取指定列，调整顺序后导出。</p>
+        
+        <h4>操作步骤</h4>
+        <ol>
+          <li>上传 .xlsx 格式的 Excel 文件</li>
+          <li>输入或选择需要的列名（支持逗号或空格分隔）</li>
+          <li>拖拽调整列的顺序</li>
+          <li>点击"导出处理后的文件"</li>
+        </ol>
 
-          <li>上传 .xlsx 文件：在“1. 上传 Excel 文件”处选择文件，系统会自动解析。</li>
-          <li>选择字段列名：在“2. 选择字段列名”中输入列名后添加，或从“原始表头”点击添加；可拖拽调整顺序。</li>
-          <li>历史配置：在“3. 历史配置”中选择以快速恢复常用列集。</li>
-          <li>导出：在“4. 导出”中设置目标 Sheet 名称并点击“导出处理后的文件”。</li>
-          <li>预览：下方“5. 预览”展示前 5 行，若已选择列则按所选列展示。</li>
-
-        <div class="hint">提示：若列名存在空格或大小写差异，请以表头为准；导出文件名基于原文件名自动生成。</div>
+        <h4>提示</h4>
+        <ul>
+          <li>默认只提取第一次出现的重名列，取消勾选可提取所有</li>
+          <li>常用配置会自动保存在"历史配置"中</li>
+          <li>底部可预览前 5 行数据</li>
+          <li>重名列导出时会自动编号（如：姓名(1)、姓名(2)）</li>
+        </ul>
       </div>
+    </div>
+  </div>
+
+  <!-- 导出成功提示弹窗 -->
+  <div id="successModal" class="modal success-modal" role="dialog" aria-modal="true" hidden>
+    <div class="modal-backdrop" data-close-success="true"></div>
+    <div class="modal-dialog success-dialog" role="document">
+      <div class="success-icon">✓</div>
+      <div class="success-message">
+        <h3>导出成功</h3>
+        <p id="successFileName"></p>
+      </div>
+      <button id="successClose" class="primary">确定</button>
     </div>
   </div>
 

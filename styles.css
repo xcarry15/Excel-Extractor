@@ -1,6 +1,9 @@
 /*
-版本: v0.6.8
+版本: v0.9.0
 变更记录:
+- v0.9.0 (2026-02-26): 新增复选框标签样式，优化用户界面
+- v0.8.0 (2026-02-26): 新增"一键清除"按钮样式，优化面板标题布局支持按钮显示
+- v0.7.0 (2025-10-29): 新增候选列表多选样式（复选框、选中状态、确认按钮），优化交互体验
 - v0.6.8 (2025-08-22): 统一高度策略（CSS变量+clamp）；整合列表样式并降低hover抖动；补充Firefox滚动条样式；加入 prefers-reduced-motion 降级；移除移动端冗余max-height覆盖
 - v0.6.7 (2025-08-22): 固定“已选择列/原始表头”两个虚线面板高度，列表在面板内滚动，确保可见内容不超出虚线底线；移动端降低固定高度
 - v0.6.6 (2025-08-22): 防止“已选择列/原始表头”面板内容纵向越界：面板裁剪溢出并稳定滚动条占位
@@ -126,16 +129,64 @@ body::after {
 .container > .card:nth-of-type(2) > .row { margin-bottom: 16px; }
 .flex { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .panel { border: 1px dashed var(--glass-border); border-radius: 12px; padding: 8px; min-height: 160px; display: flex; flex-direction: column; background: rgba(59,130,246,0.02); }
-.panel-title { color: var(--muted); font-size: 12px; margin-bottom: 8px; }
+.panel-title { color: var(--muted); font-size: 12px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 
 /* 输入+联想容器 */
 .input-wrap { position: relative; flex: 1 1 0; min-width: 260px; }
 .input-wrap > input { width: 100%; }
-.suggest { position: absolute; left: 0; right: 0; top: calc(100% + 6px); background: rgba(255,255,255,0.92); border: 1px solid rgba(59,130,246,0.18); border-radius: 10px; box-shadow: 0 8px 24px rgba(15,23,42,0.08); padding: 4px; display: flex; flex-direction: column; gap: 2px; max-height: 240px; overflow: auto; z-index: 20; }
-.suggest .item { padding: 8px 10px; border-radius: 8px; cursor: pointer; font-size: 13px; }
+.suggest { position: absolute; left: 0; right: 0; top: calc(100% + 6px); background: rgba(255,255,255,0.92); border: 1px solid rgba(59,130,246,0.18); border-radius: 10px; box-shadow: 0 8px 24px rgba(15,23,42,0.08); padding: 4px; display: flex; flex-direction: column; gap: 2px; max-height: 280px; overflow: auto; z-index: 20; }
+.suggest .item { 
+  padding: 8px 10px; 
+  border-radius: 8px; 
+  cursor: pointer; 
+  font-size: 13px; 
+  display: flex; 
+  align-items: center; 
+  gap: 8px;
+  transition: background 0.15s ease;
+}
 .suggest .item:hover { background: rgba(59,130,246,0.06); }
 .suggest .item.active { background: rgba(59,130,246,0.10); color: var(--text); }
+.suggest .item.selected { background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.25); }
+.suggest .item.selected:hover { background: rgba(59,130,246,0.15); }
 .suggest mark { background: rgba(59,130,246,0.18); color: inherit; padding: 0 1px; border-radius: 2px; }
+
+/* 候选列表中的复选框 */
+.suggest-checkbox {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+  accent-color: var(--primary);
+}
+
+.suggest-label {
+  flex: 1;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* 确认按钮 */
+.suggest-confirm {
+  margin: 4px 4px 6px 4px;
+  padding: 8px 12px;
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  color: var(--primary);
+  font-weight: 500;
+  font-size: 13px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.suggest-confirm:hover {
+  background: rgba(59, 130, 246, 0.18);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
 
 .list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
 .list li { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; border: 1px solid var(--glass-border); border-radius: 10px; background: rgba(59,130,246,0.03); font-size: 13px; }
@@ -167,6 +218,26 @@ body::after {
 
 input[type="text"], select { background: rgba(255,255,255,0.8); color: var(--text); border: 1px solid var(--glass-border); border-radius: 10px; padding: 8px 10px; outline: none; backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); }
 input[type="file"] { color: var(--text); }
+
+/* 复选框标签样式 */
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 13px;
+  color: var(--text);
+}
+.checkbox-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--primary);
+}
+.checkbox-label:hover {
+  color: var(--primary);
+}
 
 /* 让主要输入控件在各自区域占满宽度（保留卡片内padding即为边距） */
 #colInput, #historySelect, #sheetName {
@@ -207,6 +278,11 @@ button.ghost {
   border-color: transparent;
   padding: 10px 12px;
 }
+button.ghost.small {
+  padding: 4px 8px;
+  font-size: 11px;
+  border-radius: 6px;
+}
 button.icon-btn { 
   background: var(--glass); 
   border: 1px solid var(--glass-border); 
@@ -239,6 +315,10 @@ button.secondary:hover {
 button.ghost:hover {
   background: rgba(59, 130, 246, 0.04);
   color: var(--primary);
+}
+button.ghost.small:hover {
+  background: rgba(239, 68, 68, 0.08);
+  color: var(--danger);
 }
 button:active {
   transform: translateY(0);
