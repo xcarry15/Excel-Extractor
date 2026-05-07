@@ -83,6 +83,8 @@ const $status = el('status');
 const $previewTable = document.getElementById('previewTable');
 const $clearSelected = el('btnClearSelected');
 const $chkFirstOnly = el('chkFirstOnly');
+const $selectedMeta = el('selectedMeta');
+const $headersMeta = el('headersMeta');
 // 说明模态相关元素
 const $helpBtn = el('btnHelp');
 const $helpModal = document.getElementById('helpModal');
@@ -98,7 +100,24 @@ const HISTORY_KEY = 'excel_field_extract_histories_v1';
 
 function setStatus(msg, type = 'info') {
   $status.textContent = msg || '';
-  $status.className = `hint ${type}`;
+  $status.className = `status-chip ${type}`;
+}
+
+function setFileInfo(text, type = 'neutral') {
+  if (!$fileInfo) return;
+  $fileInfo.textContent = text || '';
+  $fileInfo.className = `status-chip ${type}`;
+}
+
+function updateSummaryMeta() {
+  if ($selectedMeta) {
+    const selectedCount = state.selected.length;
+    $selectedMeta.textContent = `${selectedCount} 项已选`;
+  }
+  if ($headersMeta) {
+    const headerCount = state.headers.length;
+    $headersMeta.textContent = `${headerCount} 个表头`;
+  }
 }
 
 function readFile(file) {
@@ -129,6 +148,7 @@ function refreshHeadersUI() {
     frag.appendChild(li);
   });
   $headersList.appendChild(frag);
+  updateSummaryMeta();
 }
 
 function renderSelectedUI() {
@@ -169,6 +189,7 @@ function renderSelectedUI() {
     frag.appendChild(li);
   });
   $selectedList.appendChild(frag);
+  updateSummaryMeta();
 }
 
 function initDragSort() {
@@ -559,7 +580,7 @@ async function handleParse() {
     rebuildHeaderIndexMap();
     updateSelectedDerived();
 
-    $fileInfo.textContent = `已加载：${file.name}（${rows.length} 行，${headers.length} 列）`;
+    setFileInfo(`已加载：${file.name}（${rows.length} 行，${headers.length} 列）`, 'success');
     refreshHeadersUI();
     renderSelectedUI();
     setStatus('解析完成');
@@ -1097,9 +1118,12 @@ $selectedList.addEventListener('click', (e) => {
     setStatus('就绪');
   }
   
+  setFileInfo('未选择文件', 'neutral');
+  updateSummaryMeta();
   updateHistoryUI();
   initDragSort();
   // 锁定第二区域的初始高度
   lockSelectionAreaHeight();
   schedulePreview();
+  requestAnimationFrame(() => document.body.classList.add('app-ready'));
 })();

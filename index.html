@@ -77,24 +77,46 @@
 </head>
 <body>
   <header class="app-header">
-    <h1>Excel 字段提取 - 沈浪 v1.4.5</h1>
+    <div class="header-copy">
+      <div class="header-kicker">Excel 本地处理工具</div>
+      <h1>Excel 字段提取</h1>
+      <p class="header-subtitle">上传、筛选、排序、导出，整套流程都在当前浏览器中完成。</p>
+    </div>
     <div class="header-actions">
+      <span class="header-badge">v1.4.5</span>
       <button id="btnHelp" class="ghost" title="查看使用说明">说明</button>
     </div>
   </header>
 
   <main class="container">
-    <section class="card">
-      <h2>1. 上传 Excel 文件 (.xlsx)</h2>
+    <section class="card" id="cardUpload">
+      <div class="section-head">
+        <div>
+          <div class="section-kicker">步骤 1</div>
+          <h2>上传 Excel 文件</h2>
+        </div>
+        <span class="section-badge">.xlsx</span>
+      </div>
       <div class="row">
         <input id="fileInput" type="file" accept=".xlsx"/>
       </div>
-      <div class="hint" id="fileInfo">未选择文件</div>
-      <div class="hint" id="status"></div>
+      <div class="status-cluster">
+        <div class="status-chip neutral" id="fileInfo">未选择文件</div>
+        <div class="status-chip neutral" id="status">等待文件</div>
+      </div>
     </section>
 
-    <section class="card">
-      <h2>2. 选择字段列名</h2>
+    <section class="card" id="cardFields">
+      <div class="section-head">
+        <div>
+          <div class="section-kicker">步骤 2</div>
+          <h2>选择字段列名</h2>
+        </div>
+        <div class="section-metrics">
+          <span id="selectedMeta" class="metric-pill">0 项已选</span>
+          <span id="headersMeta" class="metric-pill subtle">0 个表头</span>
+        </div>
+      </div>
       <div class="row">
         <div class="input-wrap">
           <input id="colInput" type="text" placeholder="输入列名，支持逗号、多个空格分隔或回车添加，如：姓名, 电话 或 点位编号   提交时间   审核状态"/>
@@ -124,7 +146,13 @@
     </section>
 
     <section class="card">
-      <h2>3. 历史配置</h2>
+      <div class="section-head">
+        <div>
+          <div class="section-kicker">步骤 3</div>
+          <h2>历史配置</h2>
+        </div>
+        <span class="section-badge muted">最多 20 条</span>
+      </div>
       <div class="row">
         <select id="historySelect"></select>
         <button id="btnApplyHistory" class="secondary">应用</button>
@@ -132,8 +160,14 @@
       </div>
     </section>
 
-    <section class="card">
-      <h2>4. 导出</h2>
+    <section class="card" id="cardExport">
+      <div class="section-head">
+        <div>
+          <div class="section-kicker">步骤 4</div>
+          <h2>导出结果</h2>
+        </div>
+        <span class="section-badge success">含说明 Sheet</span>
+      </div>
       <div class="row">
         <input id="sheetName" type="text" placeholder="新Sheet名称，默认为 字段提取"/>
         <button id="btnExport" class="primary">导出处理后的文件</button>
@@ -141,7 +175,13 @@
     </section>
 
     <section class="card">
-      <h2>5. 预览（前5行）</h2>
+      <div class="section-head">
+        <div>
+          <div class="section-kicker">步骤 5</div>
+          <h2>数据预览</h2>
+        </div>
+        <span class="section-badge muted">前 5 行</span>
+      </div>
       <div class="preview-wrap">
         <table id="previewTable" class="preview-table"></table>
       </div>
