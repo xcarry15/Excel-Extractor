@@ -47,7 +47,7 @@ function parseColInput() {
  */
 function getFirstOnly() {
   const $chkFirstOnly = $('chkFirstOnly');
-  return $chkFirstOnly ? $chkFirstOnly.checked : true;
+  return $chkFirstOnly ? $chkFirstOnly.checked : false;
 }
 
 // ========================
@@ -480,7 +480,9 @@ export function bindEvents() {
       const state = getState();
       if (!isNaN(headerIndex) && headerIndex >= 0 && headerIndex < state.headers.length) {
         const name = state.headers[headerIndex];
-        addSelected([name], getFirstOnly());
+        // 防止重复添加：如果已存在则跳过
+        if (state.selected.includes(name)) return;
+        addSelected([name], true);  // 强制只添加一个
         renderSelectedList();
         renderHeadersList();
         schedulePreview();
@@ -496,7 +498,9 @@ export function bindEvents() {
       const state = getState();
       if (!isNaN(headerIndex) && headerIndex >= 0 && headerIndex < state.headers.length) {
         const name = state.headers[headerIndex];
-        addSelected([name], getFirstOnly());
+        // 防止重复添加：如果已存在则跳过
+        if (state.selected.includes(name)) return;
+        addSelected([name], true);  // 强制只添加一个
         renderSelectedList();
         renderHeadersList();
         schedulePreview();
