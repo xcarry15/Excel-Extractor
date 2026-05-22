@@ -88,6 +88,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: var(--s3);
 }
 
 .card-title { font-size: 0.95rem; font-weight: 600; }
@@ -192,7 +193,7 @@ button.danger:hover { background: var(--error-light); }
 .input-wrap { position: relative; flex: 1; }
 
 /* Checkbox */
-.checkbox { display: inline-flex; align-items: center; gap: var(--s2); font-size: 0.8rem; color: var(--text-secondary); cursor: pointer; margin-top: var(--s2); }
+.checkbox { display: inline-flex; align-items: center; gap: var(--s2); font-size: 0.8rem; color: var(--text-secondary); cursor: pointer; margin-top: var(--s3); }
 .checkbox input { width: 13px; height: 13px; accent-color: var(--accent); cursor: pointer; }
 
 /* History List */
@@ -219,8 +220,8 @@ button.danger:hover { background: var(--error-light); }
   overflow-y: auto;
 }
 
-.panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--s2); padding-bottom: var(--s2); border-bottom: 1px solid var(--border); }
-.panel-title { font-size: 0.7rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; }
+.panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--s2); padding-bottom: var(--s2); border-bottom: 1px solid var(--border); gap: var(--s2); }
+.panel-title { font-size: 0.7rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; white-space: nowrap; }
 
 .panel-list { list-style: none; display: flex; flex-direction: column; gap: 2px; }
 
@@ -264,7 +265,7 @@ button.danger:hover { background: var(--error-light); }
 .panel-item .del:hover { background: var(--error-light); color: var(--error); }
 
 /* Panel Filter */
-.panel-filter { width: 80px; padding: 2px 6px; font-size: 0.75rem; border: 1px solid var(--border); border-radius: 3px; background: var(--surface); outline: none; }
+.panel-filter { width: 60px; padding: 2px 4px; font-size: 0.72rem; border: 1px solid var(--border); border-radius: 3px; background: var(--surface); outline: none; }
 .panel-filter:focus { border-color: var(--accent); }
 
 /* Preview */
