@@ -98,6 +98,7 @@ function handleAddCol() {
 
   addSelected(names, getFirstOnly());
   renderSelectedList();
+  renderHeadersList();
   schedulePreview();
 
   const $colInput = $('colInput');
@@ -143,6 +144,7 @@ function handleClearSelected() {
   const count = getState().selected.length;
   clearAllSelected();
   renderSelectedList();
+  renderHeadersList();
   schedulePreview();
   setStatus(`已清除 ${count} 个已选择的列`);
 }
@@ -156,10 +158,21 @@ function handleApplyHistory(index) {
   const applied = applyHistoryIndex(index, firstOnly);
   if (applied) {
     renderSelectedList();
+    renderHeadersList();
     schedulePreview();
     const list = loadHistories();
     const item = list[index];
-    setStatus(`已应用：${item?.name || ''}`);
+
+    // 检查字段不匹配情况
+    const state = getState();
+    const missing = item.columns.filter(col => !state.headers.includes(col));
+
+    if (missing.length > 0) {
+      setStatus(`已应用：${item?.name || ''}（${missing.length}个字段不存在）`, 'warn');
+    } else {
+      setStatus(`已应用：${item?.name || ''}`);
+    }
+
     if ($sheetName && item?.name) {
       $sheetName.value = item.name;
     }
@@ -446,6 +459,7 @@ export function bindEvents() {
       if (name) {
         addSelected([name], getFirstOnly());
         renderSelectedList();
+        renderHeadersList();
         schedulePreview();
       }
     });
@@ -459,6 +473,7 @@ export function bindEvents() {
       if (name) {
         addSelected([name], getFirstOnly());
         renderSelectedList();
+        renderHeadersList();
         schedulePreview();
       }
     });
@@ -478,6 +493,7 @@ export function bindEvents() {
       if (!isNaN(index)) {
         removeSelectedByIndex(index);
         renderSelectedList();
+        renderHeadersList();
         schedulePreview();
       }
     });
