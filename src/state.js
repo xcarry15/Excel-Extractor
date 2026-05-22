@@ -135,6 +135,9 @@ export function addSelected(names, firstOnly = true) {
   });
 
   names.forEach(n => {
+    // 跳过已选择的列
+    if (_state.selected.includes(n)) return;
+
     const positions = headerPositions.get(n);
     if (!positions || positions.length === 0) {
       _state.skippedItems.push({

@@ -27,8 +27,10 @@ import {
 import { MESSAGES } from '../constants.js';
 
 // ========================
-// 辅助函数
+// 防抖标记
 // ========================
+let _addColThrottled = false;
+let _exportThrottled = false;
 
 /**
  * 解析列名输入
@@ -93,6 +95,10 @@ async function handleParse() {
  * 处理添加列
  */
 function handleAddCol() {
+  if (_addColThrottled) return;
+  _addColThrottled = true;
+  setTimeout(() => { _addColThrottled = false; }, 300);
+
   const names = parseColInput();
   if (names.length === 0) return;
 
@@ -110,6 +116,10 @@ function handleAddCol() {
  * 处理导出
  */
 function handleExport() {
+  if (_exportThrottled) return;
+  _exportThrottled = true;
+  setTimeout(() => { _exportThrottled = false; }, 500);
+
   const $sheetName = $('sheetName');
   const state = getState();
 
