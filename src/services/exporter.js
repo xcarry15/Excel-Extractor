@@ -33,7 +33,7 @@ export function buildExportWorksheet(sheetName = '字段提取') {
     const totalCount = state.selected.filter(n => n === name).length;
     if (totalCount > 1) {
       duplicateColumnIndices.push(colIndex);
-      return `${name}(${count + 1})`;
+      return `${name} (第${count + 1}次)`;
     }
     return name;
   });
