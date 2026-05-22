@@ -414,7 +414,7 @@ export function bindEvents() {
   const $selectedList = $('selectedList');
   if ($selectedList) {
     $selectedList.addEventListener('click', (e) => {
-      const btn = e.target.closest('button.icon-btn');
+      const btn = e.target.closest('button.del');
       if (!btn) return;
       e.stopPropagation();
       e.preventDefault();
