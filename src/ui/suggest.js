@@ -2,7 +2,7 @@
 import { getState } from '../state.js';
 import { $, clearElement, createElement } from '../utils/dom.js';
 import { addSelected } from '../state.js';
-import { schedulePreview } from './renderer.js';
+import { schedulePreview, renderSelectedList } from './renderer.js';
 import { SUGGEST_MAX_ITEMS } from '../constants.js';
 
 /**
@@ -67,6 +67,7 @@ export function confirmSuggestSelection() {
   addSelected(selected);
   if ($colInput) $colInput.value = '';
   hideSuggest();
+  renderSelectedList();
   schedulePreview();
   return true;
 }
