@@ -55,7 +55,10 @@ export function clearHistories() {
  * @returns {string}
  */
 export function getHistoryDisplayText(item) {
-  return `${item.name} · ${item.columns.join(', ')}`;
+  const cols = item.columns.slice(0, 3).join(', ');
+  const extra = item.columns.length > 3 ? `…+${item.columns.length - 3}` : '';
+  const ts = new Date(item.ts).toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' });
+  return `${ts} · ${cols}${extra}`;
 }
 
 /**

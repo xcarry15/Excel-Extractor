@@ -117,8 +117,7 @@ body {
 
 /* Form */
 input[type="text"],
-input[type="file"],
-select {
+input[type="file"] {
   width: 100%;
   padding: var(--s2) var(--s3);
   font-size: 0.85rem;
@@ -130,6 +129,27 @@ select {
   outline: none;
   transition: var(--t);
 }
+
+select {
+  width: 100%;
+  min-width: 0;
+  padding: 3px 24px 3px 6px;
+  font-size: 0.78rem;
+  font-family: var(--font);
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%235c6570'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+}
+
+select:focus { border-color: var(--accent); }
 
 input[type="text"]:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-light); }
 input::placeholder { color: var(--text-muted); }
@@ -167,6 +187,7 @@ button.danger:hover { background: var(--error-light); }
 /* Input Row */
 .input-row { display: flex; gap: var(--s2); }
 .input-row input { flex: 1; }
+.input-row select { flex: 1; min-width: 0; }
 .input-wrap { position: relative; flex: 1; }
 
 /* Checkbox */

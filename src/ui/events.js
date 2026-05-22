@@ -80,6 +80,7 @@ async function handleParse() {
     setFileInfo(fileInfo, 'success');
     renderHeadersList();
     renderSelectedList();
+    updateHistoryUI();
     setStatus(MESSAGES.PARSE_SUCCESS, 'success');
     schedulePreview();
   } catch (err) {
@@ -151,6 +152,7 @@ function handleClearSelected() {
  */
 function handleApplyHistory() {
   const $history = $('historySelect');
+  const $sheetName = $('sheetName');
   const firstOnly = getFirstOnly();
   const applied = applyHistoryIndex($history?.value, firstOnly);
   if (applied) {
@@ -158,7 +160,13 @@ function handleApplyHistory() {
     schedulePreview();
     const list = loadHistories();
     const item = list[Number($history?.value)];
-    setStatus(`已应用历史配置：${item?.name || ''}`);
+    setStatus(`已应用：${item?.name || ''}`);
+    // 自动选中 sheet 名称
+    if ($sheetName && item?.name) {
+      $sheetName.value = item.name;
+    }
+    // 恢复选择框默认项
+    $history.value = '';
   }
 }
 
@@ -182,8 +190,18 @@ export function updateHistoryUI() {
   const $history = $('historySelect');
   if (!$history) return;
 
+  const currentVal = $history.value;
   $history.innerHTML = '';
   const hist = loadHistories();
+
+  if (hist.length === 0) {
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = '暂无历史配置';
+    placeholder.disabled = true;
+    $history.appendChild(placeholder);
+    return;
+  }
 
   const placeholder = document.createElement('option');
   placeholder.value = '';
@@ -196,6 +214,11 @@ export function updateHistoryUI() {
     opt.textContent = getHistoryDisplayText(h);
     $history.appendChild(opt);
   });
+
+  // 恢复之前的值（如果还有效）
+  if (currentVal && currentVal < hist.length) {
+    $history.value = currentVal;
+  }
 }
 
 /**
