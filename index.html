@@ -26,7 +26,7 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Excel 字段提取 - 沈浪 v1.4.5</title>
-  <link rel="stylesheet" href="./styles-modern.css"/>
+  <link rel="stylesheet" href="./styles.css"/>
   <!-- Excel 解析库：本地优先，国内 CDN 兜底 -->
   <script>
     (function() {
@@ -77,110 +77,107 @@
 </head>
 <body>
   <header class="app-header">
-    <div class="header-copy">
-      <div class="header-kicker">Excel 本地处理工具</div>
+    <div class="header-title">
       <h1>Excel 字段提取</h1>
-      <p class="header-subtitle">上传、筛选、排序、导出，整套流程都在当前浏览器中完成。</p>
+      <span class="header-badge">v1.5.0</span>
     </div>
     <div class="header-actions">
-      <span class="header-badge">v1.4.5</span>
       <button id="btnHelp" class="ghost" title="查看使用说明">说明</button>
     </div>
   </header>
 
   <main class="container">
-    <section class="card" id="cardUpload">
-      <div class="section-head">
+    <!-- 步骤 1: 上传文件 -->
+    <section class="section" id="cardUpload">
+      <div class="section-header">
         <div>
-          <div class="section-kicker">步骤 1</div>
-          <h2>上传 Excel 文件</h2>
+          <div class="section-meta">步骤 1</div>
+          <h2 class="section-title">上传 Excel 文件</h2>
         </div>
-        <span class="section-badge">.xlsx</span>
       </div>
-      <div class="row">
-        <input id="fileInput" type="file" accept=".xlsx"/>
-      </div>
-      <div class="status-cluster">
-        <div class="status-chip neutral" id="fileInfo">未选择文件</div>
-        <div class="status-chip neutral" id="status">等待文件</div>
+      <input id="fileInput" type="file" accept=".xlsx"/>
+      <div style="margin-top: 12px; display: flex; gap: 8px;">
+        <span class="status" id="fileInfo">未选择文件</span>
+        <span class="status" id="status">等待文件</span>
       </div>
     </section>
 
-    <section class="card" id="cardFields">
-      <div class="section-head">
+    <!-- 步骤 2: 选择字段 -->
+    <section class="section" id="cardFields">
+      <div class="section-header">
         <div>
-          <div class="section-kicker">步骤 2</div>
-          <h2>选择字段列名</h2>
+          <div class="section-meta">步骤 2</div>
+          <h2 class="section-title">选择字段</h2>
         </div>
-        <div class="section-metrics">
-          <span id="selectedMeta" class="metric-pill">0 项已选</span>
-          <span id="headersMeta" class="metric-pill subtle">0 个表头</span>
+        <div style="display: flex; gap: 8px;">
+          <span class="status" id="selectedMeta">0 项已选</span>
+          <span class="status" id="headersMeta">0 个表头</span>
         </div>
       </div>
-      <div class="row">
+      <div class="input-row">
         <div class="input-wrap">
-          <input id="colInput" type="text" placeholder="输入列名，支持逗号、多个空格分隔或回车添加，如：姓名, 电话 或 点位编号   提交时间   审核状态"/>
+          <input id="colInput" type="text" placeholder="输入列名，回车添加"/>
           <div id="colSuggest" class="suggest" hidden role="listbox" aria-label="匹配列名"></div>
         </div>
         <button id="btnAddCol" class="secondary">添加</button>
       </div>
-      <div class="row" style="margin-top: 8px;">
-        <label class="checkbox-label">
-          <input type="checkbox" id="chkFirstOnly" checked />
-          <span>重名列仅添加第一次出现的</span>
-        </label>
-      </div>
-      <div class="flex">
+      <label class="checkbox" style="margin-top: 12px;">
+        <input type="checkbox" id="chkFirstOnly" checked />
+        <span>重名列仅添加第一次出现的</span>
+      </label>
+      <div class="panel-grid">
         <div class="panel">
-          <div class="panel-title">
-            <span>已选择列（可拖拽排序）</span>
-            <button id="btnClearSelected" class="ghost small" title="清空所有已选择的列">一键清除</button>
+          <div class="panel-header">
+            <span class="panel-title">已选择</span>
+            <button id="btnClearSelected" class="ghost small">清除</button>
           </div>
-          <ul id="selectedList" class="list"></ul>
+          <ul id="selectedList" class="panel-list"></ul>
         </div>
         <div class="panel">
-          <div class="panel-title">原始表头</div>
-          <ul id="headersList" class="list compact"></ul>
+          <div class="panel-header">
+            <span class="panel-title">原始表头</span>
+          </div>
+          <ul id="headersList" class="panel-list"></ul>
         </div>
       </div>
     </section>
 
-    <section class="card">
-      <div class="section-head">
+    <!-- 步骤 3: 历史配置 -->
+    <section class="section">
+      <div class="section-header">
         <div>
-          <div class="section-kicker">步骤 3</div>
-          <h2>历史配置</h2>
+          <div class="section-meta">步骤 3</div>
+          <h2 class="section-title">历史配置</h2>
         </div>
-        <span class="section-badge muted">最多 20 条</span>
       </div>
-      <div class="row">
-        <select id="historySelect"></select>
+      <div class="input-row">
+        <select id="historySelect" style="flex: 1;"></select>
         <button id="btnApplyHistory" class="secondary">应用</button>
-        <button id="btnClearHistory" class="ghost">清空历史</button>
+        <button id="btnClearHistory" class="ghost">清空</button>
       </div>
     </section>
 
-    <section class="card" id="cardExport">
-      <div class="section-head">
+    <!-- 步骤 4: 导出 -->
+    <section class="section" id="cardExport">
+      <div class="section-header">
         <div>
-          <div class="section-kicker">步骤 4</div>
-          <h2>导出结果</h2>
+          <div class="section-meta">步骤 4</div>
+          <h2 class="section-title">导出结果</h2>
         </div>
-        <span class="section-badge success">含说明 Sheet</span>
       </div>
-      <div class="row">
-        <input id="sheetName" type="text" placeholder="新Sheet名称，默认为 字段提取"/>
-        <button id="btnExport" class="primary">导出处理后的文件</button>
+      <div class="input-row">
+        <input id="sheetName" type="text" placeholder="Sheet 名称（默认：字段提取）"/>
+        <button id="btnExport" class="primary">导出文件</button>
       </div>
     </section>
 
-    <section class="card">
-      <div class="section-head">
+    <!-- 步骤 5: 预览 -->
+    <section class="section">
+      <div class="section-header">
         <div>
-          <div class="section-kicker">步骤 5</div>
-          <h2>数据预览</h2>
+          <div class="section-meta">步骤 5</div>
+          <h2 class="section-title">数据预览</h2>
         </div>
-        <span class="section-badge muted">前 5 行</span>
       </div>
       <div class="preview-wrap">
         <table id="previewTable" class="preview-table"></table>
