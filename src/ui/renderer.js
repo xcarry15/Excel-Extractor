@@ -79,29 +79,38 @@ export function renderHeadersList() {
   const state = getState();
   const frag = document.createDocumentFragment();
 
-  // 构建已选择的集合（考虑重名）
-  const selectedSet = new Set(state.selected);
+  // 统计每个字段名出现的次数
+  const nameCount = new Map();
+  state.headers.forEach(h => {
+    nameCount.set(h, (nameCount.get(h) || 0) + 1);
+  });
+
+  // 记录每个字段名当前是第几次出现
+  const nameOccurrence = new Map();
 
   state.headers.forEach((h, idx) => {
-    // 检查是否已选择（需要考虑重名的第几次出现）
+    const totalCount = nameCount.get(h);
+    const occurrence = (nameOccurrence.get(h) || 0) + 1;
+    nameOccurrence.set(h, occurrence);
+
+    // 检查是否已选择
     let isSelected = false;
-    let selectedIndex = -1;
     for (let i = 0; i < state.selected.length; i++) {
       if (state.selected[i] === h) {
-        if (selectedIndex === -1) {
-          isSelected = true;
-          break;
-        }
-        selectedIndex++;
+        isSelected = true;
+        break;
       }
     }
+
+    // 如果有重名，显示第几次
+    const displayName = totalCount > 1 ? `${h} (第${occurrence}次)` : h;
 
     const li = createElement('li', {
       className: 'panel-item' + (isSelected ? ' selected' : ''),
       dataset: { headerIndex: String(idx) }
     });
 
-    const text = createElement('span', { className: 'text' }, h);
+    const text = createElement('span', { className: 'text' }, displayName);
     text.title = h;
     li.appendChild(text);
     frag.appendChild(li);
