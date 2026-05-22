@@ -213,8 +213,8 @@ button.danger:hover { background: var(--error-light); }
   border: 1px solid var(--border);
   border-radius: var(--r);
   padding: var(--s2);
-  min-height: 120px;
-  max-height: 180px;
+  min-height: 240px;
+  max-height: 360px;
   overflow-y: auto;
 }
 

@@ -215,7 +215,7 @@ export function renderHistoryList() {
 
     const cols = document.createElement('span');
     cols.className = 'cols';
-    cols.textContent = h.columns.slice(0, 3).join(', ') + (h.columns.length > 3 ? `…+${h.columns.length - 3}` : '');
+    cols.textContent = h.columns.slice(0, 5).join(', ') + (h.columns.length > 5 ? `…+${h.columns.length - 5}` : '');
 
     const delBtn = document.createElement('button');
     delBtn.className = 'del-btn';

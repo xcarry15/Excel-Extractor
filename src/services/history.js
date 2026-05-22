@@ -66,8 +66,8 @@ export function clearHistories() {
  * @returns {string}
  */
 export function getHistoryDisplayText(item) {
-  const cols = item.columns.slice(0, 3).join(', ');
-  const extra = item.columns.length > 3 ? `…+${item.columns.length - 3}` : '';
+  const cols = item.columns.slice(0, 5).join(', ');
+  const extra = item.columns.length > 5 ? `…+${item.columns.length - 5}` : '';
   const ts = new Date(item.ts).toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' });
   return `${ts} · ${cols}${extra}`;
 }
