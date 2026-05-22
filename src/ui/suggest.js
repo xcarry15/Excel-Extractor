@@ -21,7 +21,7 @@ let _suggestSelected = new Set();
  * 获取当前输入 token
  * @returns {string}
  */
-function getCurrentToken() {
+export function getCurrentToken() {
   const $colInput = $('colInput');
   const raw = $colInput?.value || '';
   const parts = raw.split(/\s+|[,，\n\t;]+/g);
