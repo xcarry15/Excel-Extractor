@@ -1,6 +1,6 @@
 // src/ui/events.js
 import { $ } from '../utils/dom.js';
-import { getState, addSelected, removeSelectedByIndex, clearAllSelected, updateSelectedDerived } from '../state.js';
+import { getState, getStateRef, addSelected, removeSelectedByIndex, clearAllSelected, updateSelectedDerived } from '../state.js';
 import { parseExcelFile, applyParseResult, isXLSXLoaded } from '../services/parser.js';
 import { exportToExcel } from '../services/exporter.js';
 import { loadHistories, saveHistory, clearHistories, applyHistoryIndex, getHistoryDisplayText, deleteHistory } from '../services/history.js';

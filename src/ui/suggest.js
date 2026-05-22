@@ -168,32 +168,32 @@ export function updateSuggest() {
     return;
   }
 
+  const qLower = q.toLowerCase();
   const matchedItems = /** @type {SuggestItem[]} */ ([]);
   const nameCountMap = new Map();
-
-  // 统计匹配项中每个名称出现的次数
-  state.headers.forEach((h, index) => {
-    if (h.toLowerCase().includes(q.toLowerCase())) {
-      nameCountMap.set(h, (nameCountMap.get(h) || 0) + 1);
-    }
-  });
-
   const nameOccurrence = new Map();
 
+  // 单次遍历：统计出现次数并收集匹配项
   state.headers.forEach((h, index) => {
-    if (h.toLowerCase().includes(q.toLowerCase())) {
-      const count = nameCountMap.get(h);
-      const occurrence = (nameOccurrence.get(h) || 0) + 1;
-      nameOccurrence.set(h, occurrence);
+    if (!h.toLowerCase().includes(qLower)) return;
 
-      const displayName = count > 1 ? `${h} (第${occurrence}列)` : h;
+    nameCountMap.set(h, (nameCountMap.get(h) || 0) + 1);
+  });
 
-      matchedItems.push({
-        name: h,
-        headerIndex: index,
-        displayName
-      });
-    }
+  state.headers.forEach((h, index) => {
+    if (!h.toLowerCase().includes(qLower)) return;
+
+    const count = nameCountMap.get(h);
+    const occurrence = (nameOccurrence.get(h) || 0) + 1;
+    nameOccurrence.set(h, occurrence);
+
+    const displayName = count > 1 ? `${h} (第${occurrence}列)` : h;
+
+    matchedItems.push({
+      name: h,
+      headerIndex: index,
+      displayName
+    });
   });
 
   const limited = matchedItems.slice(0, SUGGEST_MAX_ITEMS);

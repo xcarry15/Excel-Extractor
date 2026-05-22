@@ -102,13 +102,7 @@ export function renderHeadersList() {
     nameOccurrence.set(h, occurrence);
 
     // 检查是否已选择
-    let isSelected = false;
-    for (let i = 0; i < state.selected.length; i++) {
-      if (state.selected[i] === h) {
-        isSelected = true;
-        break;
-      }
-    }
+    const isSelected = state.selected.includes(h);
 
     // 如果有重名，显示第几次
     const displayName = totalCount > 1 ? `${h} (第${occurrence}次)` : h;
