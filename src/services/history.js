@@ -50,7 +50,7 @@ export function deleteHistory(index) {
   const list = loadHistories();
   if (index < 0 || index >= list.length) return;
   list.splice(index, 1);
-  localStorage.setItem(HISTARY_KEY, JSON.stringify(list));
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(list));
 }
 
 /**
