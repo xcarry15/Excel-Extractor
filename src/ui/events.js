@@ -476,8 +476,10 @@ export function bindEvents() {
     $headersList.addEventListener('click', (e) => {
       const li = e.target.closest('li');
       if (!li || !$headersList.contains(li)) return;
-      const name = li.querySelector('span')?.textContent?.trim();
-      if (name) {
+      const headerIndex = parseInt(li.getAttribute('data-header-index'), 10);
+      const state = getState();
+      if (!isNaN(headerIndex) && headerIndex >= 0 && headerIndex < state.headers.length) {
+        const name = state.headers[headerIndex];
         addSelected([name], getFirstOnly());
         renderSelectedList();
         renderHeadersList();
@@ -490,8 +492,10 @@ export function bindEvents() {
       if (e.key === ' ') e.preventDefault();
       const li = e.target.closest('li');
       if (!li || !$headersList.contains(li)) return;
-      const name = li.querySelector('span')?.textContent?.trim();
-      if (name) {
+      const headerIndex = parseInt(li.getAttribute('data-header-index'), 10);
+      const state = getState();
+      if (!isNaN(headerIndex) && headerIndex >= 0 && headerIndex < state.headers.length) {
+        const name = state.headers[headerIndex];
         addSelected([name], getFirstOnly());
         renderSelectedList();
         renderHeadersList();
