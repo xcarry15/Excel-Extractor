@@ -43,6 +43,17 @@ export function saveHistory(name, columns) {
 }
 
 /**
+ * 删除单条历史记录
+ * @param {number} index
+ */
+export function deleteHistory(index) {
+  const list = loadHistories();
+  if (index < 0 || index >= list.length) return;
+  list.splice(index, 1);
+  localStorage.setItem(HISTARY_KEY, JSON.stringify(list));
+}
+
+/**
  * 清空历史记录
  */
 export function clearHistories() {

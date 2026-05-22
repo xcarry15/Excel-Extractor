@@ -3,7 +3,7 @@ import { $ } from '../utils/dom.js';
 import { getState, addSelected, removeSelectedByIndex, clearAllSelected, updateSelectedDerived } from '../state.js';
 import { parseExcelFile, applyParseResult, isXLSXLoaded } from '../services/parser.js';
 import { exportToExcel } from '../services/exporter.js';
-import { loadHistories, saveHistory, clearHistories, applyHistoryIndex, getHistoryDisplayText } from '../services/history.js';
+import { loadHistories, saveHistory, clearHistories, applyHistoryIndex, getHistoryDisplayText, deleteHistory } from '../services/history.js';
 import {
   renderSelectedList,
   renderHeadersList,
@@ -150,24 +150,29 @@ function handleClearSelected() {
 /**
  * 处理应用历史配置
  */
-function handleApplyHistory() {
-  const $history = $('historySelect');
+function handleApplyHistory(index) {
   const $sheetName = $('sheetName');
   const firstOnly = getFirstOnly();
-  const applied = applyHistoryIndex($history?.value, firstOnly);
+  const applied = applyHistoryIndex(index, firstOnly);
   if (applied) {
     renderSelectedList();
     schedulePreview();
     const list = loadHistories();
-    const item = list[Number($history?.value)];
+    const item = list[index];
     setStatus(`已应用：${item?.name || ''}`);
-    // 自动选中 sheet 名称
     if ($sheetName && item?.name) {
       $sheetName.value = item.name;
     }
-    // 恢复选择框默认项
-    $history.value = '';
   }
+}
+
+/**
+ * 处理删除单条历史
+ */
+function handleDeleteHistory(index) {
+  deleteHistory(index);
+  renderHistoryList();
+  setStatus('已删除');
 }
 
 /**
@@ -175,7 +180,7 @@ function handleApplyHistory() {
  */
 function handleClearHistory() {
   clearHistories();
-  updateHistoryUI();
+  renderHistoryList();
   setStatus('历史已清空');
 }
 
@@ -184,41 +189,54 @@ function handleClearHistory() {
 // ========================
 
 /**
- * 更新历史记录 UI
+ * 渲染历史列表
  */
-export function updateHistoryUI() {
-  const $history = $('historySelect');
-  if (!$history) return;
+export function renderHistoryList() {
+  const $list = $('historyList');
+  if (!$list) return;
 
-  const currentVal = $history.value;
-  $history.innerHTML = '';
+  $list.innerHTML = '';
   const hist = loadHistories();
 
   if (hist.length === 0) {
-    const placeholder = document.createElement('option');
-    placeholder.value = '';
-    placeholder.textContent = '暂无历史配置';
-    placeholder.disabled = true;
-    $history.appendChild(placeholder);
+    $list.innerHTML = '<div class="history-empty">暂无历史配置</div>';
     return;
   }
 
-  const placeholder = document.createElement('option');
-  placeholder.value = '';
-  placeholder.textContent = '选择历史配置…';
-  $history.appendChild(placeholder);
-
+  const frag = document.createDocumentFragment();
   hist.forEach((h, idx) => {
-    const opt = document.createElement('option');
-    opt.value = String(idx);
-    opt.textContent = getHistoryDisplayText(h);
-    $history.appendChild(opt);
+    const item = document.createElement('div');
+    item.className = 'history-item';
+    item.dataset.index = String(idx);
+
+    const name = document.createElement('span');
+    name.className = 'name';
+    name.textContent = h.name;
+
+    const cols = document.createElement('span');
+    cols.className = 'cols';
+    cols.textContent = h.columns.slice(0, 3).join(', ') + (h.columns.length > 3 ? `…+${h.columns.length - 3}` : '');
+
+    const delBtn = document.createElement('button');
+    delBtn.className = 'del-btn';
+    delBtn.textContent = '×';
+    delBtn.title = '删除';
+    delBtn.dataset.action = 'delete';
+
+    item.appendChild(name);
+    item.appendChild(cols);
+    item.appendChild(delBtn);
+    frag.appendChild(item);
   });
 
-  // 恢复之前的值（如果还有效）
-  if (currentVal && currentVal < hist.length) {
-    $history.value = currentVal;
-  }
+  $list.appendChild(frag);
+}
+
+/**
+ * 更新历史记录 UI（兼容旧接口）
+ */
+export function updateHistoryUI() {
+  renderHistoryList();
 }
 
 /**
@@ -335,12 +353,27 @@ export function bindEvents() {
   // ========================
   // 历史记录
   // ========================
-  const $applyHistory = $('btnApplyHistory');
   const $clearHistory = $('btnClearHistory');
-  const $history = $('historySelect');
+  const $historyList = $('historyList');
 
-  if ($applyHistory) $applyHistory.addEventListener('click', handleApplyHistory);
   if ($clearHistory) $clearHistory.addEventListener('click', handleClearHistory);
+
+  if ($historyList) {
+    $historyList.addEventListener('click', (e) => {
+      const delBtn = e.target.closest('.del-btn');
+      if (delBtn) {
+        const item = delBtn.closest('.history-item');
+        if (item) {
+          handleDeleteHistory(Number(item.dataset.index));
+        }
+        return;
+      }
+      const item = e.target.closest('.history-item');
+      if (item) {
+        handleApplyHistory(Number(item.dataset.index));
+      }
+    });
+  }
 
   // ========================
   // 导出
