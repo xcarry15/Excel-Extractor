@@ -453,6 +453,10 @@ button.icon-btn:hover {
 }
 
 /* ==================== Modal ==================== */
+.modal[hidden] {
+  display: none !important;
+}
+
 .modal {
   position: fixed;
   inset: 0;
