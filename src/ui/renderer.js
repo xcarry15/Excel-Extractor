@@ -46,15 +46,15 @@ export function renderSelectedList() {
 
     const displayName = count > 1 ? `${name} (第${occurrence}次)` : name;
 
-    const li = createElement('li');
+    const li = createElement('li', { className: 'panel-item' });
 
-    const text = createElement('span', {}, displayName);
+    const text = createElement('span', { className: 'text' }, displayName);
     text.title = displayName;
 
     const del = createElement('button', {
-      className: 'icon-btn',
+      className: 'del',
       title: '移除',
-      'aria-label': `移除 ${displayName}`,
+      'aria-label': '移除',
       dataset: { index: String(index) },
       type: 'button'
     }, '×');
@@ -79,13 +79,30 @@ export function renderHeadersList() {
   const state = getState();
   const frag = document.createDocumentFragment();
 
-  state.headers.forEach(h => {
-    const li = createElement('li');
-    const text = createElement('span', {}, h);
+  // 构建已选择的集合（考虑重名）
+  const selectedSet = new Set(state.selected);
+
+  state.headers.forEach((h, idx) => {
+    // 检查是否已选择（需要考虑重名的第几次出现）
+    let isSelected = false;
+    let selectedIndex = -1;
+    for (let i = 0; i < state.selected.length; i++) {
+      if (state.selected[i] === h) {
+        if (selectedIndex === -1) {
+          isSelected = true;
+          break;
+        }
+        selectedIndex++;
+      }
+    }
+
+    const li = createElement('li', {
+      className: 'panel-item' + (isSelected ? ' selected' : ''),
+      dataset: { headerIndex: String(idx) }
+    });
+
+    const text = createElement('span', { className: 'text' }, h);
     text.title = h;
-    li.title = '点击添加到选择';
-    li.setAttribute('role', 'button');
-    li.tabIndex = 0;
     li.appendChild(text);
     frag.appendChild(li);
   });
