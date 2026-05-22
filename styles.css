@@ -78,7 +78,7 @@ body {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r);
-  padding: var(--s3);
+  padding: var(--s2) var(--s3);
 }
 
 .card + .card { margin-top: 0; }
@@ -88,12 +88,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--s2);
 }
 
-.card-title { font-size: 0.85rem; font-weight: 600; }
+.card-title { font-size: 0.95rem; font-weight: 600; }
 .card-meta { font-size: 0.7rem; color: var(--text-muted); }
 .card-desc { font-size: 0.75rem; color: var(--text-secondary); margin-top: 1px; }
+.card-title-wrap { display: flex; align-items: center; gap: var(--s2); }
+.card-step { font-size: 0.7rem; color: var(--text-muted); }
 
 /* Status */
 .status {
