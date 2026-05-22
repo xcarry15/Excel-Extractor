@@ -7,15 +7,33 @@
   <link rel="stylesheet" href="./styles.css"/>
   <script>
     (function() {
-      // 国内网络环境优化：本地优先，CDN兜底顺序：bootcdn > sqi > cdnjs
+      // 国内网络环境优化：本地优先（2秒超时），CDN兜底顺序：bootcdn > staticfile
       var urls = [
         './libs/xlsx.full.min.js',
         'https://cdn.bootcdn.net/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
         'https://cdn.staticfile.org/xlsx/0.18.5/xlsx.full.min.js'
       ];
       var i = 0;
-      function load(u) { return new Promise(function(ok, fail) { var s = document.createElement('script'); s.src = u; s.defer = true; s.onload = ok; s.onerror = fail; document.head.appendChild(s); }); }
-      (function next() { if (i >= urls.length) return; load(urls[i++]).then(function() { console.log('XLSX OK'); }, function() { next(); }); })();
+      function load(u, timeout) {
+        return new Promise(function(ok, fail) {
+          var s = document.createElement('script');
+          s.src = u;
+          s.defer = true;
+          s.onload = ok;
+          s.onerror = fail;
+          if (timeout > 0) {
+            var t = setTimeout(fail, timeout);
+            s.addEventListener('load', function() { clearTimeout(t); });
+          }
+          document.head.appendChild(s);
+        });
+      }
+      function next() {
+        if (i >= urls.length) return;
+        var timeout = (i === 0) ? 2000 : 0;  // 本地文件2秒超时
+        load(urls[i++], timeout).then(function() { console.log('XLSX OK'); }, function() { next(); });
+      }
+      next();
     })();
   </script>
   <script>
@@ -26,8 +44,26 @@
         'https://cdn.staticfile.org/Sortable/1.15.0/Sortable.min.js'
       ];
       var i = 0;
-      function load(u) { return new Promise(function(ok, fail) { var s = document.createElement('script'); s.src = u; s.defer = true; s.onload = ok; s.onerror = fail; document.head.appendChild(s); }); }
-      (function next() { if (i >= urls.length) return; load(urls[i++]).then(function() { console.log('Sortable OK'); }, function() { next(); }); })();
+      function load(u, timeout) {
+        return new Promise(function(ok, fail) {
+          var s = document.createElement('script');
+          s.src = u;
+          s.defer = true;
+          s.onload = ok;
+          s.onerror = fail;
+          if (timeout > 0) {
+            var t = setTimeout(fail, timeout);
+            s.addEventListener('load', function() { clearTimeout(t); });
+          }
+          document.head.appendChild(s);
+        });
+      }
+      function next() {
+        if (i >= urls.length) return;
+        var timeout = (i === 0) ? 2000 : 0;  // 本地文件2秒超时
+        load(urls[i++], timeout).then(function() { console.log('Sortable OK'); }, function() { next(); });
+      }
+      next();
     })();
   </script>
 </head>
