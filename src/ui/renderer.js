@@ -77,6 +77,11 @@ export function renderHeadersList() {
 
   clearElement($headersList);
   const state = getState();
+
+  // 获取过滤词
+  const $filter = $('headersFilter');
+  const filter = $filter?.value?.toLowerCase() || '';
+
   const frag = document.createDocumentFragment();
 
   // 统计每个字段名出现的次数
@@ -89,6 +94,9 @@ export function renderHeadersList() {
   const nameOccurrence = new Map();
 
   state.headers.forEach((h, idx) => {
+    // 过滤
+    if (filter && !h.toLowerCase().includes(filter)) return;
+
     const totalCount = nameCount.get(h);
     const occurrence = (nameOccurrence.get(h) || 0) + 1;
     nameOccurrence.set(h, occurrence);

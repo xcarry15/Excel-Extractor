@@ -303,6 +303,14 @@ export function bindEvents() {
   if ($file) $file.addEventListener('change', handleParse);
 
   // ========================
+  // 表头过滤搜索
+  // ========================
+  const $headersFilter = $('headersFilter');
+  if ($headersFilter) {
+    $headersFilter.addEventListener('input', () => renderHeadersList());
+  }
+
+  // ========================
   // 列名输入
   // ========================
   const $colInput = $('colInput');

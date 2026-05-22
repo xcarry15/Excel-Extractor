@@ -150,6 +150,19 @@ export function updateSuggest() {
   const q = getCurrentToken();
   const state = getState();
 
+  // 解析所有输入的列名
+  const $colInput = $('colInput');
+  const raw = $colInput?.value || '';
+  const names = raw.split(/\s+|[,，\n\t;]+/g).map(s => s.trim()).filter(Boolean);
+
+  // 渲染验证结果
+  if (names.length > 0) {
+    renderValidate(names);
+  } else {
+    const $validate = $('colValidate');
+    if ($validate) $validate.innerHTML = '';
+  }
+
   if (!q || !state.headers.length) {
     hideSuggest();
     return;
@@ -201,4 +214,24 @@ export function getSuggestActive() {
  */
 export function setSuggestActive(index) {
   _suggestActive = index;
+}
+
+/**
+ * 渲染输入验证结果
+ * @param {string[]} names
+ */
+export function renderValidate(names) {
+  const $validate = $('colValidate');
+  if (!$validate) return;
+
+  $validate.innerHTML = '';
+  const state = getState();
+
+  names.forEach(name => {
+    const isValid = state.headers.includes(name);
+    const span = document.createElement('span');
+    span.className = `col-validate-item ${isValid ? 'valid' : 'invalid'}`;
+    span.textContent = isValid ? `✓ ${name}` : `✗ ${name}`;
+    $validate.appendChild(span);
+  });
 }
