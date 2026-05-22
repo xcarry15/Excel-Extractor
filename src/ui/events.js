@@ -266,9 +266,22 @@ export function initDragSort() {
       const to = evt.newIndex;
       if (from === to || from == null || to == null) return;
 
-      const names = Array.from($selectedList.querySelectorAll('li > span')).map(n => n.textContent || '');
-      const state = getState();
+      const names = Array.from($selectedList.querySelectorAll('li > span.text')).map(n => n.textContent || '');
+      const state = getStateRef();
+
+      // 记录重排前的 selectedWithIndex 映射
+      const oldWithIndex = [...state.selectedWithIndex];
+
+      // 更新 selected 顺序
       state.selected = names;
+
+      // 根据新的 selected 顺序重建 selectedWithIndex
+      state.selectedWithIndex = names.map(name => {
+        // 找第一个匹配的名字
+        const found = oldWithIndex.find(item => item.name === name);
+        return found || { name, originalIndex: state.headerIndexMap?.get(name) ?? -1 };
+      });
+
       updateSelectedDerived();
       schedulePreview();
     }
