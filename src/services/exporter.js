@@ -41,7 +41,7 @@ export function buildExportWorksheet(sheetName = '字段提取') {
   // 构建数据行
   const newRows = [exportHeaders];
   for (const row of state.dataRows) {
-    newRows.push(selectedIdx.map(i => row[i]));
+    newRows.push(selectedIdx.map(i => row[i] ?? ''));
   }
 
   const ws = XLSX.utils.aoa_to_sheet(newRows);

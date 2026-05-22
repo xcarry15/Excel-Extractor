@@ -114,10 +114,7 @@ export function rebuildHeaderIndexMap() {
  * 更新选中列的索引
  */
 export function updateSelectedDerived() {
-  if (!_state.headerIndexMap) rebuildHeaderIndexMap();
-  _state.selectedIdx = _state.selected
-    .map(h => _state.headerIndexMap.get(h))
-    .filter(i => i != null);
+  _state.selectedIdx = _state.selectedWithIndex.map(item => item.originalIndex);
 }
 
 /**
