@@ -172,7 +172,7 @@ export function setStatus(msg, type = 'info') {
   const $status = $('status');
   if (!$status) return;
   $status.textContent = msg || '';
-  $status.className = `status-chip ${type}`;
+  $status.className = `status ${type}`;
 }
 
 /**
@@ -184,7 +184,7 @@ export function setFileInfo(text, type = 'neutral') {
   const $fileInfo = $('fileInfo');
   if (!$fileInfo) return;
   $fileInfo.textContent = text || '';
-  $fileInfo.className = `status-chip ${type}`;
+  $fileInfo.className = `status ${type}`;
 }
 
 /**

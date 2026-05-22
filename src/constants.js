@@ -15,7 +15,7 @@ export const STATUS_TYPES = {
  * 状态 chip 类名
  */
 export const CLASS_NAMES = {
-  STATUS_CHIP: 'status-chip',
+  STATUS_CHIP: 'status',
   SUGGEST: 'suggest',
   LIST_ITEM: 'list-item'
 };
