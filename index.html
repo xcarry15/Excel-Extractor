@@ -231,6 +231,9 @@
     </div>
   </div>
 
-  <script defer src="./main.js"></script>
+  <!-- ES Module 入口（支持模块化的现代浏览器） -->
+  <script type="module" src="./src/main.js"></script>
+  <!-- 传统脚本入口（兼容不支持模块的浏览器） -->
+  <script nomodule defer src="./main.js"></script>
 </body>
 </html>
