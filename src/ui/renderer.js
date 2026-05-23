@@ -103,8 +103,8 @@ export function renderHeadersList() {
     const occurrence = (nameOccurrence.get(h) || 0) + 1;
     nameOccurrence.set(h, occurrence);
 
-    // 检查是否已选择
-    const isSelected = state.selected.includes(h);
+    // 检查是否已选择（通过 name + originalIndex 组合判断）
+    const isSelected = state.selectedWithIndex.some(item => item.name === h && item.originalIndex === idx);
 
     // 如果有重名，显示第几次
     const columnLetter = indexToColumnLetter(idx);
