@@ -2,6 +2,7 @@
 import { getState } from '../state.js';
 import { $, clearElement, createElement } from '../utils/dom.js';
 import { PREVIEW_ROWS } from '../constants.js';
+import { indexToColumnLetter } from '../utils/column.js';
 
 /**
  * 预览刷新调度标记
@@ -44,7 +45,8 @@ export function renderSelectedList() {
     const occurrence = (nameOccurrence.get(name) || 0) + 1;
     nameOccurrence.set(name, occurrence);
 
-    const displayName = count > 1 ? `${name} (第${occurrence}次)` : name;
+    const columnLetter = indexToColumnLetter(state.selectedWithIndex[index]?.originalIndex ?? 0);
+    const displayName = `${name} (${columnLetter})`;
 
     const li = createElement('li', { className: 'panel-item' });
 
@@ -105,7 +107,8 @@ export function renderHeadersList() {
     const isSelected = state.selected.includes(h);
 
     // 如果有重名，显示第几次
-    const displayName = totalCount > 1 ? `${h} (第${occurrence}次)` : h;
+    const columnLetter = indexToColumnLetter(idx);
+    const displayName = `${h} (${columnLetter})`;
 
     const li = createElement('li', {
       className: 'panel-item' + (isSelected ? ' selected' : ''),
