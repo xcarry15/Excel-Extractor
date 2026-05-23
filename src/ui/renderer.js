@@ -31,20 +31,9 @@ export function renderSelectedList() {
   clearElement($selectedList);
   const state = getState();
 
-  // 统计每个列名出现的次数
-  const nameCount = new Map();
-  state.selected.forEach(name => {
-    nameCount.set(name, (nameCount.get(name) || 0) + 1);
-  });
-
-  const nameOccurrence = new Map();
   const frag = document.createDocumentFragment();
 
   state.selected.forEach((name, index) => {
-    const count = nameCount.get(name);
-    const occurrence = (nameOccurrence.get(name) || 0) + 1;
-    nameOccurrence.set(name, occurrence);
-
     const columnLetter = indexToColumnLetter(state.selectedWithIndex[index]?.originalIndex ?? 0);
     const displayName = `${name} (${columnLetter})`;
 
@@ -99,14 +88,10 @@ export function renderHeadersList() {
     // 过滤
     if (filter && !h.toLowerCase().includes(filter)) return;
 
-    const totalCount = nameCount.get(h);
-    const occurrence = (nameOccurrence.get(h) || 0) + 1;
-    nameOccurrence.set(h, occurrence);
-
     // 检查是否已选择（通过 name + originalIndex 组合判断）
     const isSelected = state.selectedWithIndex.some(item => item.name === h && item.originalIndex === idx);
 
-    // 如果有重名，显示第几次
+    // 显示列字母后缀
     const columnLetter = indexToColumnLetter(idx);
     const displayName = `${h} (${columnLetter})`;
 
