@@ -163,9 +163,11 @@ export function renderPreview() {
   const trh = document.createElement('tr');
   const headFrag = document.createDocumentFragment();
 
-  useHeaders.forEach(h => {
-    const th = createElement('th', {}, h);
-    th.title = h;
+  useHeaders.forEach((h, idx) => {
+    const columnLetter = indexToColumnLetter(idxs[idx] ?? 0);
+    const displayHeader = `${h} (${columnLetter})`;
+    const th = createElement('th', {}, displayHeader);
+    th.title = displayHeader;
     headFrag.appendChild(th);
   });
 
