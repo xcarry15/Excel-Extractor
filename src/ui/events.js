@@ -63,6 +63,15 @@ function getFirstOnly() {
   return $chkFirstOnly ? $chkFirstOnly.checked : false;
 }
 
+/**
+ * 获取是否显示列字母选项状态
+ * @returns {boolean}
+ */
+function getShowColumnLetter() {
+  const $chkShowColumnLetter = $('chkShowColumnLetter');
+  return $chkShowColumnLetter ? $chkShowColumnLetter.checked : false;
+}
+
 // ========================
 // 事件处理器
 // ========================

@@ -16,9 +16,10 @@ const DEFAULT_BORDER = {
 /**
  * 构建导出工作表
  * @param {string} [sheetName='字段提取']
+ * @param {boolean} [showColumnLetter=true] - 是否显示列字母
  * @returns {Object} worksheet
  */
-export function buildExportWorksheet(sheetName = '字段提取') {
+export function buildExportWorksheet(sheetName = '字段提取', showColumnLetter = true) {
   const state = getState();
 
   // 使用 selectedWithIndex 来获取精确的列索引
@@ -35,12 +36,15 @@ export function buildExportWorksheet(sheetName = '字段提取') {
 
   const exportHeaders = state.selected.map((name, colIndex) => {
     const originalIndex = state.selectedWithIndex[colIndex]?.originalIndex ?? 0;
-    const columnLetter = indexToColumnLetter(originalIndex);
     const isDuplicate = (headerCountMap.get(name) || 0) > 1;
     if (isDuplicate) {
       duplicateColumnIndices.push(colIndex);
     }
-    return `${name} (${columnLetter})`;
+    if (showColumnLetter) {
+      const columnLetter = indexToColumnLetter(originalIndex);
+      return `${name} (${columnLetter})`;
+    }
+    return name;
   });
 
   // 构建数据行
@@ -252,7 +256,11 @@ export function exportToExcel(sheetName = '字段提取') {
     throw new Error('请选择至少一个列名');
   }
 
-  const ws = buildExportWorksheet(sheetName);
+  // 从 UI 获取列字母显示选项
+  const $chkShowColumnLetter = document.getElementById('chkShowColumnLetter');
+  const showColumnLetter = $chkShowColumnLetter ? $chkShowColumnLetter.checked : true;
+
+  const ws = buildExportWorksheet(sheetName, showColumnLetter);
   const wsExplanation = buildExplanationSheet();
 
   const wb = XLSX.utils.book_new();
