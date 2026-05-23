@@ -1,5 +1,6 @@
 // src/services/exporter.js
 import { getState } from '../state.js';
+import { indexToColumnLetter } from '../utils/column.js';
 
 /**
  * 边框样式
@@ -23,19 +24,23 @@ export function buildExportWorksheet(sheetName = '字段提取') {
   // 使用 selectedWithIndex 来获取精确的列索引
   const selectedIdx = state.selectedWithIndex.map(item => item.originalIndex);
 
-  // 为重复的列名添加序号标识
+  // 判断原始数据中的重名列（同一列名出现多次）
   const headerCountMap = new Map();
+  state.headers.forEach(h => {
+    headerCountMap.set(h, (headerCountMap.get(h) || 0) + 1);
+  });
+
+  // 导出的列名添加列字母后缀，重名列标记黄色背景
   const duplicateColumnIndices = [];
 
   const exportHeaders = state.selected.map((name, colIndex) => {
-    const count = headerCountMap.get(name) || 0;
-    headerCountMap.set(name, count + 1);
-    const totalCount = state.selected.filter(n => n === name).length;
-    if (totalCount > 1) {
+    const originalIndex = state.selectedWithIndex[colIndex]?.originalIndex ?? 0;
+    const columnLetter = indexToColumnLetter(originalIndex);
+    const isDuplicate = (headerCountMap.get(name) || 0) > 1;
+    if (isDuplicate) {
       duplicateColumnIndices.push(colIndex);
-      return `${name} (第${count + 1}次)`;
     }
-    return name;
+    return `${name} (${columnLetter})`;
   });
 
   // 构建数据行
