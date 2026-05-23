@@ -163,6 +163,22 @@ export function addSelected(names, firstOnly = true) {
 }
 
 /**
+ * 添加选中列（通过精确索引）
+ * @param {number} headerIndex - 表头数组中的索引
+ */
+export function addSelectedByIndex(headerIndex) {
+  if (headerIndex < 0 || headerIndex >= _state.headers.length) return;
+  const name = _state.headers[headerIndex];
+
+  // 检查是否已存在相同的 name + originalIndex 组合
+  if (_state.selectedWithIndex.some(item => item.name === name && item.originalIndex === headerIndex)) return;
+
+  _state.selected.push(name);
+  _state.selectedWithIndex.push({ name, originalIndex: headerIndex });
+  updateSelectedDerived();
+}
+
+/**
  * 根据索引移除选中列
  * @param {number} index - 要移除的索引
  */

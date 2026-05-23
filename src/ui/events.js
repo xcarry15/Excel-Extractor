@@ -1,6 +1,6 @@
 // src/ui/events.js
 import { $ } from '../utils/dom.js';
-import { getState, getStateRef, addSelected, removeSelectedByIndex, clearAllSelected, updateSelectedDerived } from '../state.js';
+import { getState, getStateRef, addSelected, addSelectedByIndex, removeSelectedByIndex, clearAllSelected, updateSelectedDerived } from '../state.js';
 import { parseExcelFile, applyParseResult, isXLSXLoaded } from '../services/parser.js';
 import { exportToExcel } from '../services/exporter.js';
 import { loadHistories, saveHistory, clearHistories, applyHistoryIndex, getHistoryDisplayText, deleteHistory } from '../services/history.js';
@@ -501,12 +501,8 @@ export function bindEvents() {
       const li = e.target.closest('li');
       if (!li || !$headersList.contains(li)) return;
       const headerIndex = parseInt(li.getAttribute('data-header-index'), 10);
-      const state = getState();
       if (!isNaN(headerIndex) && headerIndex >= 0 && headerIndex < state.headers.length) {
-        const name = state.headers[headerIndex];
-        // 防止重复添加：如果已存在则跳过
-        if (state.selected.includes(name)) return;
-        addSelected([name], true);  // 强制只添加一个
+        addSelectedByIndex(headerIndex);
         renderSelectedList();
         renderHeadersList();
         schedulePreview();
@@ -519,12 +515,8 @@ export function bindEvents() {
       const li = e.target.closest('li');
       if (!li || !$headersList.contains(li)) return;
       const headerIndex = parseInt(li.getAttribute('data-header-index'), 10);
-      const state = getState();
       if (!isNaN(headerIndex) && headerIndex >= 0 && headerIndex < state.headers.length) {
-        const name = state.headers[headerIndex];
-        // 防止重复添加：如果已存在则跳过
-        if (state.selected.includes(name)) return;
-        addSelected([name], true);  // 强制只添加一个
+        addSelectedByIndex(headerIndex);
         renderSelectedList();
         renderHeadersList();
         schedulePreview();
