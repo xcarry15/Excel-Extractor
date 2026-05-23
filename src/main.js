@@ -1,7 +1,7 @@
 // src/main.js
-import { bindEvents, updateHistoryUI, initDragSort } from './ui/events.js';
-import { setStatus, setFileInfo } from './ui/renderer.js';
-import { isXLSXLoaded } from './services/parser.js';
+import { bindEvents, updateHistoryUI, initDragSort, getPendingFile } from './ui/events.js';
+import { setStatus, setFileInfo, renderHeadersList, renderSelectedList, schedulePreview } from './ui/renderer.js';
+import { isXLSXLoaded, parseExcelFile, applyParseResult } from './services/parser.js';
 import { MESSAGES, LIB_CHECK_INTERVAL, LIB_LOAD_TIMEOUT } from './constants.js';
 
 /**
@@ -52,6 +52,31 @@ function waitForXLSXLibrary() {
 }
 
 /**
+ * 处理待处理文件（库加载前用户上传的文件）
+ */
+async function processPendingFile() {
+  const file = getPendingFile();
+  if (!file) return;
+
+  try {
+    setStatus(MESSAGES.PARSING);
+    const result = await parseExcelFile(file);
+    applyParseResult(result);
+
+    const fileInfo = `已加载：${file.name}（${result.totalRows} 行，${result.totalCols} 列）`;
+    setFileInfo(fileInfo, 'success');
+    renderHeadersList();
+    renderSelectedList();
+    updateHistoryUI();
+    setStatus(MESSAGES.PARSE_SUCCESS, 'success');
+    schedulePreview();
+  } catch (err) {
+    console.error('解析错误详情:', err);
+    setStatus(`解析失败：${err.message || '请确认文件是否为有效的 .xlsx'}`, 'error');
+  }
+}
+
+/**
  * 初始化应用
  */
 async function init() {
@@ -71,6 +96,9 @@ async function init() {
 
   // 添加 app-ready 类
   requestAnimationFrame(() => document.body.classList.add('app-ready'));
+
+  // 处理库加载前用户上传的待处理文件
+  await processPendingFile();
 }
 
 // DOM 就绪后初始化

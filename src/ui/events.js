@@ -31,6 +31,17 @@ import { MESSAGES } from '../constants.js';
 // ========================
 let _addColThrottled = false;
 let _exportThrottled = false;
+let _pendingFile = null;
+
+/**
+ * 获取并清除待处理文件
+ * @returns {File|null}
+ */
+export function getPendingFile() {
+  const file = _pendingFile;
+  _pendingFile = null;
+  return file;
+}
 
 /**
  * 解析列名输入
@@ -69,9 +80,12 @@ async function handleParse() {
   }
 
   if (!isXLSXLoaded()) {
+    _pendingFile = file;  // 保存待处理文件
     setStatus(MESSAGES.LIB_LOADING, 'warn');
     return;
   }
+
+  _pendingFile = null;  // 清除待处理文件
 
   try {
     setStatus(MESSAGES.PARSING);
