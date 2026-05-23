@@ -501,6 +501,7 @@ export function bindEvents() {
       const li = e.target.closest('li');
       if (!li || !$headersList.contains(li)) return;
       const headerIndex = parseInt(li.getAttribute('data-header-index'), 10);
+      const state = getState();
       if (!isNaN(headerIndex) && headerIndex >= 0 && headerIndex < state.headers.length) {
         addSelectedByIndex(headerIndex);
         renderSelectedList();
@@ -515,6 +516,7 @@ export function bindEvents() {
       const li = e.target.closest('li');
       if (!li || !$headersList.contains(li)) return;
       const headerIndex = parseInt(li.getAttribute('data-header-index'), 10);
+      const state = getState();
       if (!isNaN(headerIndex) && headerIndex >= 0 && headerIndex < state.headers.length) {
         addSelectedByIndex(headerIndex);
         renderSelectedList();
