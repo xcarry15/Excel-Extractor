@@ -1,6 +1,6 @@
 // src/ui/events.js
 import { $ } from '../utils/dom.js';
-import { getState, getStateRef, addSelected, addSelectedByIndex, removeSelectedByIndex, clearAllSelected, updateSelectedDerived } from '../state.js';
+import { getState, getStateRef, addSelected, addSelectedByIndex, toggleSelectedByIndex, removeSelectedByIndex, clearAllSelected, updateSelectedDerived } from '../state.js';
 import { parseExcelFile, applyParseResult, isXLSXLoaded } from '../services/parser.js';
 import { exportToExcel } from '../services/exporter.js';
 import { loadHistories, saveHistory, clearHistories, applyHistoryIndex, getHistoryDisplayText, deleteHistory } from '../services/history.js';
@@ -503,7 +503,7 @@ export function bindEvents() {
       const headerIndex = parseInt(li.getAttribute('data-header-index'), 10);
       const state = getState();
       if (!isNaN(headerIndex) && headerIndex >= 0 && headerIndex < state.headers.length) {
-        addSelectedByIndex(headerIndex);
+        toggleSelectedByIndex(headerIndex);
         renderSelectedList();
         renderHeadersList();
         schedulePreview();
@@ -518,7 +518,7 @@ export function bindEvents() {
       const headerIndex = parseInt(li.getAttribute('data-header-index'), 10);
       const state = getState();
       if (!isNaN(headerIndex) && headerIndex >= 0 && headerIndex < state.headers.length) {
-        addSelectedByIndex(headerIndex);
+        toggleSelectedByIndex(headerIndex);
         renderSelectedList();
         renderHeadersList();
         schedulePreview();

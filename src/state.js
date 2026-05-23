@@ -179,6 +179,25 @@ export function addSelectedByIndex(headerIndex) {
 }
 
 /**
+ * 切换选中状态（通过精确索引）
+ * @param {number} headerIndex - 表头数组中的索引
+ */
+export function toggleSelectedByIndex(headerIndex) {
+  if (headerIndex < 0 || headerIndex >= _state.headers.length) return;
+  const name = _state.headers[headerIndex];
+
+  const idx = _state.selectedWithIndex.findIndex(item => item.name === name && item.originalIndex === headerIndex);
+  if (idx !== -1) {
+    _state.selected.splice(idx, 1);
+    _state.selectedWithIndex.splice(idx, 1);
+  } else {
+    _state.selected.push(name);
+    _state.selectedWithIndex.push({ name, originalIndex: headerIndex });
+  }
+  updateSelectedDerived();
+}
+
+/**
  * 根据索引移除选中列
  * @param {number} index - 要移除的索引
  */
